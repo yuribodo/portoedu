@@ -1,12 +1,15 @@
 import { motion, useScroll, useTransform } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 import portiAvatar from '/assets/avatar.png'
+import portiAvatarBook from '/assets/avatar-book.png'
+import portiAvatarPencil from '/assets/avatar-pencil.png'
 import { User, MagnifyingGlass, GraduationCap } from '@phosphor-icons/react'
 
 const steps = [
   {
     number: '01',
     icon: User,
+    avatar: portiAvatar,
     title: 'Conte sua história',
     description:
       'Responda perguntas sobre você, seus objetivos e necessidades para personalizarmos sua experiência',
@@ -14,6 +17,7 @@ const steps = [
   {
     number: '02',
     icon: MagnifyingGlass,
+    avatar: portiAvatarBook,
     title: 'Descubra oportunidades',
     description:
       'Nosso sistema encontra bolsas e programas perfeitos para você, baseado no seu perfil único',
@@ -21,6 +25,7 @@ const steps = [
   {
     number: '03',
     icon: GraduationCap,
+    avatar: portiAvatarPencil,
     title: 'Transforme seu futuro',
     description:
       'Acesse informações completas e candidature-se às oportunidades que vão impulsionar sua carreira',
@@ -147,12 +152,16 @@ export function HowItWorksSection() {
                         duration: 0.5,
                         type: 'spring',
                       }}
-                      className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-primary/10 border-4 border-primary flex items-center justify-center"
+                      className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-primary/10 border-4 border-primary flex items-center justify-center overflow-visible"
                     >
                       <img
-                        src={portiAvatar}
+                        src={step.avatar}
                         alt="Porti"
-                        className="w-16 h-16 md:w-20 md:h-20 object-contain"
+                        className={`object-contain ${
+                          index === 1 || index === 2
+                            ? 'w-14 h-14 md:w-16 md:h-16'
+                            : 'w-20 h-20 md:w-24 md:h-24'
+                        }`}
                       />
                     </motion.div>
                   </div>
