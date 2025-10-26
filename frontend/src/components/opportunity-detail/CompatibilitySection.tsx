@@ -32,7 +32,7 @@ export function CompatibilitySection({ compatibility }: CompatibilitySectionProp
           </div>
 
           <Link
-            to="/chat"
+            to="/form"
             className="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300"
           >
             Completar perfil

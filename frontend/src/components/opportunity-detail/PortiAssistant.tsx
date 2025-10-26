@@ -99,10 +99,11 @@ export function PortiAssistant({ opportunity }: PortiAssistantProps) {
       }))
 
       // Chama o backend
+      // Só inclui userProfile se não for null
       const response = await sendChatMessage({
         message: content,
         conversationHistory,
-        userProfile,
+        ...(userProfile && { userProfile }),
         opportunityContext,
       })
 
