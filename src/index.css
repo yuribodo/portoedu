@@ -11,3 +11,20 @@ body {
   background-color: var(--color-background);
   color: var(--color-text);
 }
+
+/* Estilos para links de oportunidades no chat */
+.message-content a {
+  color: #22C55E;
+  text-decoration: underline;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.message-content a:hover {
+  color: #16A34A;
+  text-decoration: none;
+}
+
+.message-content strong {
+  font-weight: 600;
+}
