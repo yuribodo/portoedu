@@ -181,7 +181,7 @@ export function PortiAssistant({ opportunity }: PortiAssistantProps) {
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetContent
           side="bottom"
-          className="h-[85vh] max-h-[700px] rounded-t-[var(--radius-lg)] p-0 border-t-2 border-primary/20"
+          className="h-[85vh] max-h-[700px] rounded-t-[var(--radius-lg)] p-0 border-t-2 border-primary/20 !z-[100]"
         >
           <div className="flex flex-col h-full">
             {/* Header */}

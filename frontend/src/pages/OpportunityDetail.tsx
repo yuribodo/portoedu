@@ -23,6 +23,11 @@ export default function OpportunityDetail() {
   const [opportunity, setOpportunity] = useState<OpportunityDetailType | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  // Scroll para o topo quando a página carregar ou o id mudar
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [id])
+
   // Carrega perfil do usuário e oportunidade
   useEffect(() => {
     const loadData = async () => {
@@ -158,8 +163,12 @@ export default function OpportunityDetail() {
               transition={{ delay: 0.35, duration: 0.3 }}
               className="flex items-start gap-4"
             >
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-2xl">
-                🐢
+              <div className="flex-shrink-0 w-12 h-12 rounded-full border border-gray-200 bg-white shadow-sm flex items-center justify-center p-1">
+                <img
+                  src="/assets/avatar.png"
+                  alt="Porti"
+                  className="w-full h-full rounded-full object-cover"
+                />
               </div>
               <div className="flex-1">
                 <p className="font-semibold text-gray-900 mb-2 text-base">

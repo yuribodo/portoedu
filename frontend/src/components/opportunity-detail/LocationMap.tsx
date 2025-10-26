@@ -38,12 +38,12 @@ export function LocationMap({ location, title }: LocationMapProps) {
         </p>
       </div>
 
-      <div className="relative h-[400px] w-full">
+      <div className="relative h-[400px] w-full z-10">
         <MapContainer
           center={[coordinates.lat, coordinates.lng]}
           zoom={17}
           scrollWheelZoom={false}
-          className="h-full w-full"
+          className="h-full w-full z-10"
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
