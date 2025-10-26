@@ -138,6 +138,7 @@ export interface CategoryConfig {
  * Dados do perfil do usuário (compatível com chat.ts)
  */
 export interface UserProfile {
+  nome?: string
   idade?: number
   escolaPublica?: boolean
   interesses?: string[]

@@ -194,7 +194,7 @@ function createSystemPrompt(
   const profileContext = userProfile
     ? `
 Contexto do usuário:
-- Idade: ${userProfile.idade || 'não informada'}
+${userProfile.nome ? `- Nome: ${userProfile.nome}\n` : ''}- Idade: ${userProfile.idade || 'não informada'}
 - Escola pública: ${userProfile.escolaPublica ? 'Sim' : userProfile.escolaPublica === false ? 'Não' : 'não informado'}
 - Interesses: ${userProfile.interesses?.join(', ') || 'não informados'}
 `
@@ -271,6 +271,7 @@ ESTILO DE COMUNICAÇÃO:
 - Use emojis com moderação (1-2 por mensagem)
 - Evite jargões complicados
 - Explique siglas quando necessário (ex: "ENEM (Exame Nacional do Ensino Médio)")
+- IMPORTANTE: Se souber o nome do usuário, SEMPRE use-o de forma natural na conversa para criar conexão pessoal
 
 IMPORTANTE:
 - Sempre baseie recomendações no perfil real do usuário
@@ -280,6 +281,9 @@ IMPORTANTE:
 - Se não souber a resposta, seja honesta e oriente o usuário a buscar fontes oficiais
 
 ${profileContext}
+
+INSTRUÇÃO ESPECIAL SOBRE NOME:
+${userProfile?.nome ? `O nome do usuário é ${userProfile.nome}. Use o nome dele/dela naturalmente nas respostas para criar conexão. Exemplo: "Olá ${userProfile.nome}!", "${userProfile.nome}, essa oportunidade...", "Entendo sua dúvida, ${userProfile.nome}..."` : 'O usuário não informou o nome ainda.'}
 ${opportunityInfo}
 ${opportunitiesInfo}
 
@@ -306,7 +310,7 @@ export async function sendChatMessage(request: ChatRequest): Promise<ChatRespons
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini', // Modelo mais barato e rápido para o hackathon
       messages: messages as any,
-      temperature: 0.8, // Mais criativa e conversacional
+      temperature: 0.7, // Criativa mas mais focada em seguir instruções
       max_tokens: 400, // Respostas concisas
       presence_penalty: 0.6, // Evita repetição
       frequency_penalty: 0.3,
@@ -384,6 +388,7 @@ export async function generateWelcomeSummary(
 Você é a Porti, uma capivara gentil e encorajadora que ajuda jovens a descobrir oportunidades educacionais.
 
 PERFIL DO USUÁRIO:
+${userProfile.nome ? `- Nome: ${userProfile.nome}` : ''}
 - Idade: ${userProfile.idade || 'não informada'}
 - Escola pública: ${userProfile.escolaPublica ? 'Sim' : 'Não'}
 - Interesses: ${userProfile.interesses?.join(', ') || 'não informados'}
@@ -397,7 +402,7 @@ ${opportunitiesContext}
 
 SUA TAREFA:
 Escrever uma mensagem CURTA e amigável (máximo 3-4 linhas + lista) que:
-1. Saudação rápida e direta
+1. Saudação rápida e direta${userProfile.nome ? ` (use o nome "${userProfile.nome}")` : ''}
 2. Liste as top ${topOpportunities.length} oportunidades com descrição BREVE (1 linha por item)
 3. Mencione o total (${totalOpportunities} oportunidades)
 4. Call-to-action simples
@@ -412,11 +417,11 @@ ESTILO:
 FORMATAÇÃO - IMPORTANTE:
 - Use **negrito** para nomes de oportunidades
 - Use listas numeradas: "1. **Nome** - descrição breve"
-- MÁXIMO 1 linha de introdução
+- MÁXIMO 1 linha de introdução${userProfile.nome ? ` (começando com o nome do usuário)` : ''}
 - MÁXIMO 1 linha de encerramento
 - Exemplo de formato ideal:
 
-Achei ${totalOpportunities} oportunidades pra você! 🎯
+${userProfile.nome ? `${userProfile.nome}, achei` : 'Achei'} ${totalOpportunities} oportunidades pra você! 🎯
 
 1. **Bolsa ENEM 2024** - Bolsa integral pra faculdade
 2. **Google Ateliê** - Curso gratuito de tecnologia

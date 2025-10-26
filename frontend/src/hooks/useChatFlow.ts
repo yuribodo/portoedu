@@ -7,6 +7,7 @@ import type {
 } from '@/types/chat'
 import { saveUserProfile } from '@/utils/profileStorage'
 import { fetchRecommendations } from '@/services/api'
+import { validateAndFormatName } from '@/utils/nameValidation'
 
 const TYPING_DELAY = 800 // 800ms - timing natural
 
@@ -93,7 +94,8 @@ export function useChatFlow() {
   // Avança para próximo step
   const nextStep = useCallback((currentStep: ChatStep) => {
     const stepFlow: Record<ChatStep, ChatStep> = {
-      welcome: 'idade',
+      welcome: 'nome',
+      nome: 'idade',
       idade: 'escola-publica',
       'escola-publica': 'interesses',
       interesses: 'confirmacao',
@@ -105,6 +107,31 @@ export function useChatFlow() {
   }, [])
 
   // Handlers para cada tipo de resposta
+  const handleNomeResponse = useCallback(
+    (nome: string) => {
+      const result = validateAndFormatName(nome)
+
+      if (!result.valid) {
+        addUserMessage(nome)
+        addBotMessage(`Ops! ${result.error} 😅`)
+        return
+      }
+
+      addUserMessage(result.formatted)
+      setState((prev) => ({
+        ...prev,
+        userProfile: { ...prev.userProfile, nome: result.formatted },
+      }))
+      addBotMessage(
+        `Prazer em te conhecer, ${result.formatted}! 😊 Agora me conta, quantos anos você tem?`,
+        'quick-reply',
+        idadeOptions
+      )
+      nextStep('nome')
+    },
+    [addUserMessage, addBotMessage, nextStep]
+  )
+
   const handleIdadeResponse = useCallback(
     (idade: number) => {
       addUserMessage(`${idade} anos`)
@@ -153,7 +180,8 @@ export function useChatFlow() {
       // Mensagem de confirmação
       setTimeout(() => {
         const profile = state.userProfile
-        const summary = `Então, você tem ${profile.idade} anos, ${
+        const nomeText = profile.nome ? `${profile.nome}, ` : ''
+        const summary = `${nomeText}então, você tem ${profile.idade} anos, ${
           profile.escolaPublica ? 'estuda em escola pública' : 'não estuda em escola pública'
         } e se interessa por ${interessesText}. Está tudo certo?`
 
@@ -213,13 +241,11 @@ export function useChatFlow() {
       } else {
         addUserMessage('Não, quero ajustar')
         addBotMessage(
-          'Sem problema! 😅 Vamos começar de novo. Me diz, quantos anos você tem?',
-          'quick-reply',
-          idadeOptions
+          'Sem problema! 😅 Vamos começar de novo. Qual é o seu nome?'
         )
         setState((prev) => ({
           ...prev,
-          step: 'idade',
+          step: 'nome',
           userProfile: {},
         }))
         setSelectedInteresses([])
@@ -232,6 +258,10 @@ export function useChatFlow() {
   const handleQuickReply = useCallback(
     (option: QuickReplyOption) => {
       switch (state.step) {
+        case 'nome':
+          // Nome é sempre input de texto, não quick reply
+          break
+
         case 'idade':
           handleIdadeResponse(option.value as number)
           break
@@ -274,10 +304,15 @@ export function useChatFlow() {
   // Handler para input de texto livre
   const handleTextInput = useCallback(
     (text: string) => {
-      const trimmed = text.trim().toLowerCase()
+      const trimmed = text.trim()
       if (!trimmed) return
 
       switch (state.step) {
+        case 'nome': {
+          handleNomeResponse(trimmed)
+          break
+        }
+
         case 'idade': {
           const idade = parseInt(text.trim())
           if (!isNaN(idade) && idade >= 14 && idade <= 100) {
@@ -292,9 +327,10 @@ export function useChatFlow() {
         }
 
         case 'escola-publica': {
-          if (trimmed === 'sim' || trimmed === 's') {
+          const lowerTrimmed = trimmed.toLowerCase()
+          if (lowerTrimmed === 'sim' || lowerTrimmed === 's') {
             handleEscolaResponse(true)
-          } else if (trimmed === 'não' || trimmed === 'nao' || trimmed === 'n') {
+          } else if (lowerTrimmed === 'não' || lowerTrimmed === 'nao' || lowerTrimmed === 'n') {
             handleEscolaResponse(false)
           } else {
             addUserMessage(text)
@@ -314,9 +350,10 @@ export function useChatFlow() {
         }
 
         case 'confirmacao': {
-          if (trimmed === 'sim' || trimmed === 's') {
+          const lowerTrimmed = trimmed.toLowerCase()
+          if (lowerTrimmed === 'sim' || lowerTrimmed === 's') {
             handleConfirmacao(true)
-          } else if (trimmed === 'não' || trimmed === 'nao' || trimmed === 'n') {
+          } else if (lowerTrimmed === 'não' || lowerTrimmed === 'nao' || lowerTrimmed === 'n') {
             handleConfirmacao(false)
           } else {
             addUserMessage(text)
@@ -333,6 +370,7 @@ export function useChatFlow() {
     },
     [
       state.step,
+      handleNomeResponse,
       handleIdadeResponse,
       handleEscolaResponse,
       handleConfirmacao,
@@ -346,14 +384,10 @@ export function useChatFlow() {
     if (!isInitialized.current && state.messages.length === 0) {
       isInitialized.current = true
 
-      addBotMessage('Oi! Eu sou a Porti, sua guia no mar das oportunidades. Bora começar?')
+      addBotMessage('Oi! Eu sou a Porti, sua guia no mar das oportunidades acadêmicas. 🌊')
 
       setTimeout(() => {
-        addBotMessage(
-          'Me conta, quantos anos você tem?',
-          'quick-reply',
-          idadeOptions
-        )
+        addBotMessage('Antes de começarmos, qual é o seu nome?')
         nextStep('welcome')
       }, TYPING_DELAY + 500)
     }

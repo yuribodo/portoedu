@@ -8,6 +8,7 @@ import { opportunitiesData } from '../data/opportunities.js'
  * Schema de validação para perfil do usuário
  */
 const userProfileSchema = z.object({
+  nome: z.string().optional(),
   idade: z.number().min(0).max(120).optional(),
   escolaPublica: z.boolean().optional(),
   interesses: z.array(z.string()).optional(),

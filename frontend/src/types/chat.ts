@@ -19,6 +19,7 @@ export interface QuickReplyOption {
 }
 
 export interface UserProfile {
+  nome?: string
   idade?: number
   escolaPublica?: boolean
   interesses?: string[]
@@ -26,6 +27,7 @@ export interface UserProfile {
 
 export type ChatStep =
   | 'welcome'
+  | 'nome'
   | 'idade'
   | 'escola-publica'
   | 'interesses'

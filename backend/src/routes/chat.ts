@@ -14,6 +14,7 @@ const chatMessageSchema = z.object({
  * Schema de validação para perfil do usuário
  */
 const userProfileSchema = z.object({
+  nome: z.string().optional(),
   idade: z.number().optional(),
   escolaPublica: z.boolean().optional(),
   interesses: z.array(z.string()).optional(),

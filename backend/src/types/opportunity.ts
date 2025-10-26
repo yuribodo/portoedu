@@ -110,6 +110,7 @@ export interface OpportunityDetail {
  * Dados do perfil do usuário
  */
 export interface UserProfile {
+  nome?: string
   idade?: number
   escolaPublica?: boolean
   interesses?: string[]
