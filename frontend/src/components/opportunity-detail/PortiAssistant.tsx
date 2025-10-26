@@ -63,6 +63,16 @@ export function PortiAssistant({ opportunity }: PortiAssistantProps) {
       // Carrega perfil do usuário
       const userProfile = loadUserProfile()
 
+      // Converte deadline para string ISO de forma segura
+      let deadlineString: string | undefined
+      if (opportunity.deadline) {
+        if (opportunity.deadline instanceof Date) {
+          deadlineString = opportunity.deadline.toISOString()
+        } else if (typeof opportunity.deadline === 'string') {
+          deadlineString = opportunity.deadline
+        }
+      }
+
       // Formata contexto da oportunidade para o backend
       const opportunityContext: OpportunityContext = {
         id: opportunity.id,
@@ -85,7 +95,7 @@ export function PortiAssistant({ opportunity }: PortiAssistantProps) {
           title: s.title,
           description: s.description,
         })),
-        deadline: opportunity.deadline ? opportunity.deadline.toISOString() : undefined,
+        deadline: deadlineString,
         hasDeadline: opportunity.hasDeadline,
         mainBenefit: opportunity.mainBenefit,
         officialLink: opportunity.officialLink,
