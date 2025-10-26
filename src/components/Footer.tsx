@@ -110,7 +110,7 @@ export function Footer() {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#F8F7FA] rounded-full">
             <span className="text-sm text-text-muted">
-              Feito com 💚 e carinho por Porti 🐢
+              Feito com 💚 e carinho por Porti
             </span>
           </div>
 
