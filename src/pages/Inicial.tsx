@@ -1,67 +1,91 @@
+import { Link } from 'react-router-dom'
+import portiAvatar from '/assets/avatar.png'
+import { BackgroundLines } from '@/components/ui/background-lines'
+import { motion } from 'motion/react'
+import { OpportunitiesSection } from '@/components/OpportunitiesSection'
+import { HowItWorksSection } from '@/components/HowItWorksSection'
+import { OpportunityTypesSection } from '@/components/OpportunityTypesSection'
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
+      delayChildren: 0.1,
+    },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30, filter: 'blur(10px)' },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: {
+      duration: 0.8,
+      ease: [0.22, 1, 0.36, 1] as const,
+    },
+  },
+}
+
 function Inicial() {
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
-      <div className="text-center">
-        <h1 className="text-6xl font-bold text-text mb-6">
-          PortoEdu
-        </h1>
-        <p className="text-2xl text-text/70 mb-8">
-          Plataforma educacional
-        </p>
-        <div className="flex gap-4 justify-center">
-          <a
-            href="/form"
-            className="px-8 py-4 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg transition-colors"
+    <>
+      <BackgroundLines className="min-h-[calc(100vh-80px)] flex items-center justify-center">
+        <motion.div
+          className="max-w-2xl mx-auto px-6 text-center relative z-10"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {/* Mascot */}
+          <motion.div className="mb-2" variants={itemVariants}>
+            <img
+              src={portiAvatar}
+              alt="Porti, a tartaruga estudiosa com óculos e mochila"
+              className="w-64 h-64 md:w-72 md:h-72 mx-auto object-contain"
+            />
+          </motion.div>
+
+          {/* Title */}
+          <motion.h1
+            className="text-4xl md:text-5xl font-bold text-text mb-4"
+            variants={itemVariants}
           >
-            Começar Agora
-          </a>
-          <a
-            href="/about"
-            className="px-8 py-4 bg-white hover:bg-gray-50 text-text border-2 border-primary font-semibold rounded-lg transition-colors"
+            Seu guia no mar das oportunidades
+          </motion.h1>
+
+          {/* Subtitle */}
+          <motion.p
+            className="text-lg text-text-muted mb-8"
+            variants={itemVariants}
           >
-            Saiba Mais
-          </a>
-        </div>
-      </div>
+            Encontre bolsas e programas que combinam com você
+          </motion.p>
 
-      <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-            <span className="text-2xl">📚</span>
-          </div>
-          <h3 className="text-xl font-semibold text-text mb-2">
-            Aprenda
-          </h3>
-          <p className="text-text/70">
-            Conteúdo educacional de qualidade
-          </p>
-        </div>
+          {/* CTA */}
+          <motion.div variants={itemVariants}>
+            <Link
+              to="/form"
+              className="inline-block px-8 py-3 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg transition-all duration-200"
+            >
+              Começar agora
+            </Link>
+          </motion.div>
+        </motion.div>
+      </BackgroundLines>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-            <span className="text-2xl">🎯</span>
-          </div>
-          <h3 className="text-xl font-semibold text-text mb-2">
-            Pratique
-          </h3>
-          <p className="text-text/70">
-            Exercícios e atividades práticas
-          </p>
-        </div>
+      {/* Opportunities Section */}
+      <OpportunitiesSection />
 
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-            <span className="text-2xl">🏆</span>
-          </div>
-          <h3 className="text-xl font-semibold text-text mb-2">
-            Evolua
-          </h3>
-          <p className="text-text/70">
-            Acompanhe seu progresso
-          </p>
-        </div>
-      </div>
-    </div>
+      {/* How It Works Section */}
+      <HowItWorksSection />
+
+      {/* Opportunity Types Section */}
+      <OpportunityTypesSection />
+    </>
   )
 }
 
