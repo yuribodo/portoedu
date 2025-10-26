@@ -169,16 +169,6 @@ Abra `http://localhost:5173` no navegador e comece a conversar com a Porti!
 - Alto contraste e legibilidade
 - Navegação por teclado
 
-### 🚧 Roadmap Futuro
-
-- [ ] Sistema de autenticação de usuários
-- [ ] Salvar oportunidades favoritas
-- [ ] Notificações de deadlines
-- [ ] Compartilhamento de oportunidades
-- [ ] Tema escuro
-- [ ] PWA (funciona offline)
-- [ ] Testes automatizados
-- [ ] Internacionalização (pt-BR, en, es)
 
 ## 📡 API Endpoints
 
