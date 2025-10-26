@@ -91,7 +91,7 @@ export const opportunitiesData: OpportunityDetail[] = [
     title: 'ProUni 2025 - Bolsa Integral',
     category: 'bolsa' as const,
     icon: '🎓',
-    banner: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=400&fit=crop',
+    banner: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=800&h=400&fit=crop',
     shortDescription: 'Bolsa integral para graduação em universidades privadas',
     fullDescription: 'O Programa Universidade para Todos (ProUni) oferece bolsas de estudo integrais e parciais em instituições privadas de educação superior.',
     modality: 'presencial' as const,
