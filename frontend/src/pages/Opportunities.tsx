@@ -20,13 +20,35 @@ export default function Opportunities() {
   const [selectedCategory, setSelectedCategory] = useState<OpportunityCategory | 'all'>('all')
   const [sortBy, setSortBy] = useState<SortOption>('compatibility')
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  const [opportunities, setOpportunities] = useState<OpportunityDetail[]>(opportunitiesData)
 
-  // Carrega o perfil do usuário do localStorage (com migração automática)
+  // Carrega o perfil do usuário e recomendações do localStorage
   useEffect(() => {
     const profile = loadUserProfile()
     if (profile) {
       setUserProfile(profile)
     }
+
+    // Tenta carregar recomendações cacheadas do backend
+    const cachedRecommendations = localStorage.getItem('portoedu-recommendations')
+    if (cachedRecommendations) {
+      try {
+        const parsed = JSON.parse(cachedRecommendations)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          // Converte datas de string para Date
+          const parsedWithDates = parsed.map(opp => ({
+            ...opp,
+            deadline: opp.deadline ? new Date(opp.deadline) : undefined,
+            createdAt: opp.createdAt ? new Date(opp.createdAt) : new Date(),
+          }))
+          setOpportunities(parsedWithDates)
+        }
+      } catch (error) {
+        console.error('Erro ao carregar recomendações do cache:', error)
+        // Mantém opportunitiesData estáticos em caso de erro
+      }
+    }
+
     setTimeout(() => setIsLoading(false), 500)
   }, [])
 
@@ -95,7 +117,7 @@ export default function Opportunities() {
 
   // Processa oportunidades: busca, filtro, ordenação
   const processedOpportunities = useMemo(() => {
-    let filtered = opportunitiesData
+    let filtered = opportunities
 
     // 1. Aplica busca
     filtered = searchOpportunities(filtered, searchQuery)
@@ -109,7 +131,7 @@ export default function Opportunities() {
     filtered = sortOpportunities(filtered, sortBy, userProfile)
 
     return filtered
-  }, [searchQuery, selectedCategory, sortBy, userProfile])
+  }, [searchQuery, selectedCategory, sortBy, userProfile, opportunities])
 
   // Calcula contagens por categoria para os badges
   const categoryCounts = useMemo(() => {
@@ -117,15 +139,15 @@ export default function Opportunities() {
 
     // Se há busca ativa, conta apenas nos resultados da busca
     const dataToCount = searchQuery
-      ? searchOpportunities(opportunitiesData, searchQuery)
-      : opportunitiesData
+      ? searchOpportunities(opportunities, searchQuery)
+      : opportunities
 
     dataToCount.forEach(opp => {
       counts[opp.category] = (counts[opp.category] || 0) + 1
     })
 
     return counts as Record<OpportunityCategory, number>
-  }, [searchQuery])
+  }, [searchQuery, opportunities])
 
   // Calcula compatibilidade para cada oportunidade (somente se houver perfil)
   const opportunitiesWithMatch = useMemo(() => {
@@ -223,7 +245,7 @@ export default function Opportunities() {
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header com Porti */}
         <div className="space-y-6">
-          <HeaderPorti totalOpportunities={opportunitiesData.length} />
+          <HeaderPorti totalOpportunities={opportunities.length} />
 
           {/* SearchBar - Protagonista */}
           <SearchBar
@@ -256,7 +278,7 @@ export default function Opportunities() {
             <div className="hidden lg:block">
               <ResultsCounter
                 count={opportunitiesWithMatch.length}
-                total={opportunitiesData.length}
+                total={opportunities.length}
                 isFiltered={isFiltered}
               />
             </div>
@@ -266,7 +288,7 @@ export default function Opportunities() {
           <div className="lg:hidden">
             <ResultsCounter
               count={opportunitiesWithMatch.length}
-              total={opportunitiesData.length}
+              total={opportunities.length}
               isFiltered={isFiltered}
             />
           </div>

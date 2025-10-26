@@ -6,6 +6,7 @@ import type {
   QuickReplyOption,
 } from '@/types/chat'
 import { saveUserProfile } from '@/utils/profileStorage'
+import { fetchRecommendations } from '@/services/api'
 
 const TYPING_DELAY = 800 // 800ms - timing natural
 
@@ -168,7 +169,7 @@ export function useChatFlow() {
   )
 
   const handleConfirmacao = useCallback(
-    (confirmed: boolean) => {
+    async (confirmed: boolean) => {
       if (confirmed) {
         addUserMessage('Sim, está certo!')
 
@@ -176,16 +177,39 @@ export function useChatFlow() {
         saveUserProfile(state.userProfile)
 
         // Mensagem de transição
-        addBotMessage('Perfeito! 🎯 Encontrei várias oportunidades que combinam com você!')
+        addBotMessage('Perfeito! 🎯 Deixa eu analisar as melhores oportunidades para você...')
 
-        // Mensagem final
-        setTimeout(() => {
-          addBotMessage(
-            'Clique no botão abaixo para explorar as oportunidades. Prepare-se para descobrir caminhos incríveis! 🚀'
-          )
-        }, TYPING_DELAY + 500)
+        // Busca recomendações do backend
+        try {
+          const data = await fetchRecommendations(state.userProfile)
 
-        setState((prev) => ({ ...prev, isCompleted: true }))
+          // Cacheia lista completa de oportunidades no localStorage
+          localStorage.setItem('portoedu-recommendations', JSON.stringify(data.opportunities))
+          localStorage.setItem('portoedu-recommendations-date', new Date().toISOString())
+
+          // Mostra mensagem amigável da Porti (já cita top 2-3 oportunidades)
+          setTimeout(() => {
+            addBotMessage(data.summary)
+          }, TYPING_DELAY + 800)
+
+          // Mensagem final com botão para ver todas
+          setTimeout(() => {
+            addBotMessage(
+              'Clique no botão abaixo para explorar todas as oportunidades! 🚀'
+            )
+            setState((prev) => ({ ...prev, isCompleted: true }))
+          }, TYPING_DELAY + 1600)
+
+        } catch (error) {
+          console.error('Erro ao buscar recomendações:', error)
+          setTimeout(() => {
+            addBotMessage(
+              'Ops, tive um probleminha ao buscar as recomendações, mas não se preocupe! Clique no botão abaixo para explorar todas as oportunidades. 😊'
+            )
+            setState((prev) => ({ ...prev, isCompleted: true }))
+          }, TYPING_DELAY + 800)
+        }
+
         nextStep('confirmacao')
       } else {
         addUserMessage('Não, quero ajustar')
