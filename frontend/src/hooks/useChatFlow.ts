@@ -183,9 +183,8 @@ export function useChatFlow() {
         try {
           const data = await fetchRecommendations(state.userProfile)
 
-          // Cacheia lista completa de oportunidades no localStorage
-          localStorage.setItem('portoedu-recommendations', JSON.stringify(data.opportunities))
-          localStorage.setItem('portoedu-recommendations-date', new Date().toISOString())
+          // fetchRecommendations já salva automaticamente os IDs no cache
+          // Não precisa salvar manualmente aqui
 
           // Mostra mensagem amigável da Porti (já cita top 2-3 oportunidades)
           setTimeout(() => {

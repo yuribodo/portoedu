@@ -12,7 +12,6 @@ import type { OpportunityDetail } from '@/types/opportunity'
 export function OpportunitiesSection() {
   // Start with mockdata, will be replaced by backend data
   const [opportunities, setOpportunities] = useState<OpportunityDetail[]>(opportunitiesData)
-  const [isLoading, setIsLoading] = useState(true)
 
   // Fetch opportunities from backend
   useEffect(() => {
@@ -26,7 +25,6 @@ export function OpportunitiesSection() {
           const cachedOpportunities = await fetchOpportunitiesByIds(topIds)
           if (cachedOpportunities && cachedOpportunities.length > 0) {
             setOpportunities(cachedOpportunities)
-            setIsLoading(false)
             return
           }
         }
@@ -39,8 +37,6 @@ export function OpportunitiesSection() {
       } catch (error) {
         console.error('Failed to fetch opportunities from backend, using local data:', error)
         // Keep mockdata as fallback
-      } finally {
-        setIsLoading(false)
       }
     }
 
