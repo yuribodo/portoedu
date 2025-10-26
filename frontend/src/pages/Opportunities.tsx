@@ -9,6 +9,12 @@ import { OpportunityFeedCard } from '@/components/opportunities/OpportunityFeedC
 import { EmptyState } from '@/components/opportunities/EmptyState'
 import { OpportunityListSkeleton } from '@/components/opportunities/OpportunityListSkeleton'
 import { opportunitiesData } from '@/data/opportunitiesDetailed'
+import {
+  fetchOpportunities,
+  fetchOpportunitiesByIds,
+  fetchRecommendations,
+  getRecommendationsCache,
+} from '@/services/api'
 import { calculateCompatibility, sortByCompatibility } from '@/utils/matchCalculator'
 import { daysUntil } from '@/utils/dateUtils'
 import { loadUserProfile } from '@/utils/profileStorage'
@@ -22,34 +28,60 @@ export default function Opportunities() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [opportunities, setOpportunities] = useState<OpportunityDetail[]>(opportunitiesData)
 
-  // Carrega o perfil do usuário e recomendações do localStorage
+  // Carrega o perfil do usuário e oportunidades
   useEffect(() => {
-    const profile = loadUserProfile()
-    if (profile) {
-      setUserProfile(profile)
-    }
+    const loadData = async () => {
+      // Carrega perfil
+      const profile = loadUserProfile()
+      if (profile) {
+        setUserProfile(profile)
+      }
 
-    // Tenta carregar recomendações cacheadas do backend
-    const cachedRecommendations = localStorage.getItem('portoedu-recommendations')
-    if (cachedRecommendations) {
       try {
-        const parsed = JSON.parse(cachedRecommendations)
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          // Converte datas de string para Date
-          const parsedWithDates = parsed.map(opp => ({
-            ...opp,
-            deadline: opp.deadline ? new Date(opp.deadline) : undefined,
-            createdAt: opp.createdAt ? new Date(opp.createdAt) : new Date(),
-          }))
-          setOpportunities(parsedWithDates)
+        // 1. Verifica se tem cache válido de recomendações
+        const cache = getRecommendationsCache()
+        if (cache && cache.opportunityIds.length > 0) {
+          // Busca as oportunidades pelos IDs do cache (já ordenados por compatibilidade)
+          const cachedOpportunities = await fetchOpportunitiesByIds(cache.opportunityIds)
+          if (cachedOpportunities && cachedOpportunities.length > 0) {
+            setOpportunities(cachedOpportunities)
+            setIsLoading(false)
+            return
+          }
         }
+
+        // 2. Se tem perfil mas cache expirou, busca recomendações novamente
+        if (profile) {
+          const recommendations = await fetchRecommendations(profile)
+          if (recommendations.opportunityIds.length > 0) {
+            // Busca oportunidades pelos IDs recebidos
+            const recommendedOpportunities = await fetchOpportunitiesByIds(recommendations.opportunityIds)
+            setOpportunities(recommendedOpportunities)
+            setIsLoading(false)
+            return
+          }
+        }
+
+        // 3. Se não tem perfil ou recomendações falharam, busca todas genericamente
+        const allOpportunities = await fetchOpportunities()
+        if (allOpportunities && allOpportunities.length > 0) {
+          setOpportunities(allOpportunities)
+          setIsLoading(false)
+          return
+        }
+
+        // 4. Fallback final: usa dados mockados locais
+        setOpportunities(opportunitiesData)
       } catch (error) {
-        console.error('Erro ao carregar recomendações do cache:', error)
-        // Mantém opportunitiesData estáticos em caso de erro
+        console.error('Erro ao carregar oportunidades, usando dados locais:', error)
+        // Fallback para mockdata em caso de erro
+        setOpportunities(opportunitiesData)
+      } finally {
+        setIsLoading(false)
       }
     }
 
-    setTimeout(() => setIsLoading(false), 500)
+    loadData()
   }, [])
 
   // Função de busca inteligente

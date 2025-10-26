@@ -10,25 +10,70 @@ import { DeadlineBanner } from '@/components/opportunity-detail/DeadlineBanner'
 import { ExternalLinkButton } from '@/components/opportunity-detail/ExternalLinkButton'
 import { PortiAssistant } from '@/components/opportunity-detail/PortiAssistant'
 import { getOpportunityById } from '@/data/opportunitiesDetailed'
+import { fetchOpportunityById } from '@/services/api'
 import { calculateCompatibility } from '@/utils/matchCalculator'
 import { loadUserProfile } from '@/utils/profileStorage'
-import type { UserProfile } from '@/types/opportunity'
+import type { UserProfile, OpportunityDetail as OpportunityDetailType } from '@/types/opportunity'
 import { Card } from '@/components/ui/card'
 
 export default function OpportunityDetail() {
   const { id } = useParams<{ id: string }>()
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  const [opportunity, setOpportunity] = useState<OpportunityDetailType | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-  // Carrega perfil do usuário (com migração automática)
+  // Carrega perfil do usuário e oportunidade
   useEffect(() => {
-    const profile = loadUserProfile()
-    if (profile) {
-      setUserProfile(profile)
-    }
-  }, [])
+    const loadData = async () => {
+      // Carrega perfil
+      const profile = loadUserProfile()
+      if (profile) {
+        setUserProfile(profile)
+      }
 
-  // Busca oportunidade
-  const opportunity = id ? getOpportunityById(id) : undefined
+      // Carrega oportunidade
+      if (!id) {
+        setIsLoading(false)
+        return
+      }
+
+      try {
+        // 1. Tenta buscar do backend primeiro
+        const backendOpportunity = await fetchOpportunityById(id)
+
+        if (backendOpportunity) {
+          setOpportunity(backendOpportunity)
+          setIsLoading(false)
+          return
+        }
+
+        // 2. Fallback: usa dados mockados locais
+        const localOpportunity = getOpportunityById(id)
+        setOpportunity(localOpportunity || null)
+      } catch (error) {
+        console.error('Erro ao carregar oportunidade, usando dados locais:', error)
+        // Fallback para dados locais em caso de erro
+        const localOpportunity = getOpportunityById(id)
+        setOpportunity(localOpportunity || null)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadData()
+  }, [id])
+
+  // Se estiver carregando, mostra loading
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="text-gray-600">Carregando oportunidade...</p>
+        </div>
+      </div>
+    )
+  }
 
   // Se não encontrar, redireciona
   if (!opportunity) {

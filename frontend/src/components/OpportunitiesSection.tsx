@@ -1,13 +1,67 @@
 import { motion } from 'motion/react'
+import { useState, useEffect } from 'react'
 import { InfiniteCarousel } from './InfiniteCarousel'
-import { opportunitiesData, getFeaturedOpportunities } from '@/data/opportunitiesDetailed'
+import { opportunitiesData } from '@/data/opportunitiesDetailed'
+import {
+  fetchOpportunities,
+  fetchOpportunitiesByIds,
+  getRecommendationsCache,
+} from '@/services/api'
+import type { OpportunityDetail } from '@/types/opportunity'
 
 export function OpportunitiesSection() {
+  // Start with mockdata, will be replaced by backend data
+  const [opportunities, setOpportunities] = useState<OpportunityDetail[]>(opportunitiesData)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Fetch opportunities from backend
+  useEffect(() => {
+    const loadOpportunities = async () => {
+      try {
+        // 1. Verifica se tem cache de recomendações (já ordenadas por compatibilidade)
+        const cache = getRecommendationsCache()
+        if (cache && cache.opportunityIds.length > 0) {
+          // Pega primeiros 12 IDs do cache para exibir
+          const topIds = cache.opportunityIds.slice(0, 12)
+          const cachedOpportunities = await fetchOpportunitiesByIds(topIds)
+          if (cachedOpportunities && cachedOpportunities.length > 0) {
+            setOpportunities(cachedOpportunities)
+            setIsLoading(false)
+            return
+          }
+        }
+
+        // 2. Se não tem cache, busca oportunidades em destaque do backend
+        const backendOpportunities = await fetchOpportunities({ featured: true })
+        if (backendOpportunities && backendOpportunities.length > 0) {
+          setOpportunities(backendOpportunities)
+        }
+      } catch (error) {
+        console.error('Failed to fetch opportunities from backend, using local data:', error)
+        // Keep mockdata as fallback
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadOpportunities()
+  }, [])
+
   // Get featured opportunities, fallback to all if not enough featured ones
-  const featuredOpportunities = getFeaturedOpportunities()
-  const displayOpportunities = featuredOpportunities.length >= 6
+  const featuredOpportunities = opportunities.filter(opp => opp.featured === true)
+  let displayOpportunities = featuredOpportunities.length >= 6
     ? featuredOpportunities
-    : opportunitiesData.slice(0, 12)
+    : opportunities.slice(0, 12)
+
+  // Se tiver menos de 12 oportunidades, repete para preencher os 2 carousels
+  if (displayOpportunities.length < 12 && displayOpportunities.length > 0) {
+    const needed = 12 - displayOpportunities.length
+    const repeated = []
+    for (let i = 0; i < needed; i++) {
+      repeated.push(displayOpportunities[i % displayOpportunities.length])
+    }
+    displayOpportunities = [...displayOpportunities, ...repeated]
+  }
 
   // Split opportunities into two groups for the two carousels
   const firstHalf = displayOpportunities.slice(0, 6)

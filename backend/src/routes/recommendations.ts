@@ -33,7 +33,7 @@ export async function recommendationsRoutes(fastify: FastifyInstance) {
    * 1. Filtra e ordena oportunidades por compatibilidade (matcher.ts)
    * 2. Seleciona top 2-3 oportunidades
    * 3. Usa IA APENAS para gerar mensagem amigável citando essas top
-   * 4. Retorna mensagem + lista completa de oportunidades
+   * 4. Retorna mensagem + lista de IDs ordenados por compatibilidade
    */
   fastify.post('/api/recommendations', async (request, reply) => {
     try {
@@ -58,7 +58,7 @@ export async function recommendationsRoutes(fastify: FastifyInstance) {
       if (sortedOpportunities.length === 0) {
         return reply.code(200).send({
           summary: 'Não encontramos oportunidades que se encaixem perfeitamente com seu perfil agora, mas continue explorando! Novas oportunidades aparecem o tempo todo.',
-          opportunities: [],
+          opportunityIds: [],
         })
       }
 
@@ -80,10 +80,12 @@ export async function recommendationsRoutes(fastify: FastifyInstance) {
         sortedOpportunities.length
       )
 
-      // Passo 4: Retorna mensagem + lista completa
+      // Passo 4: Retorna mensagem + lista de IDs ordenados
+      const opportunityIds = sortedOpportunities.map(opp => opp.id)
+
       return reply.code(200).send({
         summary,
-        opportunities: sortedOpportunities,
+        opportunityIds,
       })
     } catch (error) {
       // Erro de validação

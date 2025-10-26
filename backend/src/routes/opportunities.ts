@@ -33,6 +33,13 @@ const detailParamsSchema = z.object({
 })
 
 /**
+ * Schema de validação para body do POST /api/opportunities
+ */
+const opportunitiesByIdsSchema = z.object({
+  ids: z.array(z.string().min(1)),
+})
+
+/**
  * Registra as rotas de oportunidades
  */
 export async function opportunitiesRoutes(fastify: FastifyInstance) {
@@ -69,6 +76,40 @@ export async function opportunitiesRoutes(fastify: FastifyInstance) {
       }
 
       console.error('Erro ao listar oportunidades:', error)
+      return reply.code(500).send({
+        error: 'Erro ao buscar oportunidades',
+      })
+    }
+  })
+
+  /**
+   * POST /api/opportunities
+   *
+   * Retorna oportunidades na ordem especificada pelos IDs
+   *
+   * Body:
+   * - ids: string[] - Lista de IDs ordenados
+   */
+  fastify.post('/api/opportunities', async (request, reply) => {
+    try {
+      // Valida body
+      const body = opportunitiesByIdsSchema.parse(request.body)
+
+      // Busca oportunidades mantendo a ordem dos IDs
+      const opportunities = body.ids
+        .map(id => getOpportunityById(id))
+        .filter(opp => opp !== undefined)
+
+      return reply.code(200).send(opportunities)
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return reply.code(400).send({
+          error: 'Parâmetros inválidos',
+          details: error.errors,
+        })
+      }
+
+      console.error('Erro ao buscar oportunidades por IDs:', error)
       return reply.code(500).send({
         error: 'Erro ao buscar oportunidades',
       })
