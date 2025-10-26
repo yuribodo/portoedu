@@ -43,11 +43,11 @@ export function HowItWorksSection() {
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ['start 10%', 'end 50%'],
+    offset: ['start start', 'end 70%'],
   })
 
   const heightTransform = useTransform(scrollYProgress, [0, 1], [0, timelineHeight])
-  const opacityTransform = useTransform(scrollYProgress, [0, 0.1], [0, 1])
+  const opacityTransform = useTransform(scrollYProgress, [0, 0.05], [0, 1])
   return (
     <section
       id="how-it-works"
@@ -85,7 +85,11 @@ export function HowItWorksSection() {
                 height: heightTransform,
                 opacity: opacityTransform,
               }}
-              className="absolute inset-x-0 top-0 w-[2px] bg-gradient-to-b from-primary via-primary to-primary/40 rounded-full"
+              transition={{
+                ease: [0.25, 0.1, 0.25, 1],
+                duration: 0.8,
+              }}
+              className="absolute inset-x-0 top-0 w-[3px] bg-gradient-to-b from-primary via-primary to-primary/40 rounded-full shadow-lg shadow-primary/30"
             />
           </div>
 
@@ -96,7 +100,7 @@ export function HowItWorksSection() {
             return (
               <div
                 key={step.number}
-                className="relative pt-10 md:pt-40"
+                className="relative pt-10 md:pt-96 first:md:pt-40"
               >
                 <div
                   className={`flex flex-col md:flex-row items-center gap-6 md:gap-12 sticky top-40 ${
@@ -105,16 +109,25 @@ export function HowItWorksSection() {
                 >
                   {/* Content Card */}
                   <motion.div
-                    initial={{ opacity: 0, x: isEven ? -50 : 50 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: false, margin: '-100px' }}
-                    transition={{ duration: 0.8 }}
+                    initial={{ opacity: 0, x: isEven ? -100 : 100, scale: 0.9 }}
+                    whileInView={{ opacity: 1, x: 0, scale: 1 }}
+                    viewport={{ once: false, margin: '-150px' }}
+                    transition={{
+                      duration: 1.2,
+                      type: 'spring',
+                      stiffness: 80,
+                      damping: 20,
+                    }}
                     className={`flex-1 ${
                       isEven ? 'md:text-right' : 'md:text-left'
                     } text-center`}
                   >
-                    <div className="bg-background rounded-2xl p-6 md:p-8 border border-gray-100 hover:border-primary/30 transition-all duration-300">
-                      <div
+                    <div className="bg-background rounded-2xl p-6 md:p-8 border border-gray-100 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 hover:-translate-y-1">
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: false }}
+                        transition={{ delay: 0.2, duration: 0.6 }}
                         className={`flex items-center gap-3 mb-3 ${
                           isEven
                             ? 'md:justify-end justify-center'
@@ -129,29 +142,47 @@ export function HowItWorksSection() {
                           size={32}
                           weight="bold"
                         />
-                      </div>
-                      <h3 className="text-xl md:text-2xl font-bold text-text mb-2">
+                      </motion.div>
+                      <motion.h3
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: false }}
+                        transition={{ delay: 0.3, duration: 0.6 }}
+                        className="text-xl md:text-2xl font-bold text-text mb-2"
+                      >
                         {step.title}
-                      </h3>
-                      <p className="text-sm md:text-base text-text-muted leading-relaxed">
+                      </motion.h3>
+                      <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: false }}
+                        transition={{ delay: 0.4, duration: 0.6 }}
+                        className="text-sm md:text-base text-text-muted leading-relaxed"
+                      >
                         {step.description}
-                      </p>
+                      </motion.p>
                     </div>
                   </motion.div>
 
                   {/* Center Timeline Dot with Porti */}
                   <div className="relative flex-shrink-0 z-10">
                     <motion.div
-                      initial={{ scale: 0 }}
-                      whileInView={{ scale: 1 }}
-                      viewport={{ once: false }}
+                      initial={{ scale: 0, rotate: -180 }}
+                      whileInView={{ scale: 1, rotate: 0 }}
+                      viewport={{ once: false, margin: '-100px' }}
                       transition={{
-                        duration: 0.5,
+                        duration: 0.8,
                         type: 'spring',
+                        stiffness: 100,
+                        damping: 15,
                       }}
-                      className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-primary/10 border-4 border-primary flex items-center justify-center overflow-visible"
+                      className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-primary/10 border-4 border-primary flex items-center justify-center overflow-visible shadow-lg shadow-primary/20"
                     >
-                      <img
+                      <motion.img
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: false }}
+                        transition={{ delay: 0.3, duration: 0.5 }}
                         src={step.avatar}
                         alt="Porti"
                         className={`object-contain ${

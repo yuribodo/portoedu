@@ -8,6 +8,7 @@ import { ResultsCounter } from '@/components/opportunities/ResultsCounter'
 import { OpportunityFeedCard } from '@/components/opportunities/OpportunityFeedCard'
 import { EmptyState } from '@/components/opportunities/EmptyState'
 import { OpportunityListSkeleton } from '@/components/opportunities/OpportunityListSkeleton'
+import { OpportunitiesAssistant } from '@/components/opportunities/OpportunitiesAssistant'
 import { opportunitiesData } from '@/data/opportunitiesDetailed'
 import {
   fetchOpportunities,
@@ -350,6 +351,14 @@ export default function Opportunities() {
           />
         )}
       </div>
+
+      {/* Assistente do Porti - Chat flutuante */}
+      <OpportunitiesAssistant
+        opportunities={opportunitiesWithMatch}
+        userProfile={userProfile}
+        hasFilters={isFiltered}
+        totalCount={opportunities.length}
+      />
     </div>
   )
 }

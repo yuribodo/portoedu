@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { motion } from 'motion/react'
 import { ChatCircle } from '@phosphor-icons/react'
 import {
@@ -12,20 +12,47 @@ import Avatar from '@/components/chat/Avatar'
 import Message from '@/components/chat/Message'
 import TypingIndicator from '@/components/chat/TypingIndicator'
 import UserInput from '@/components/chat/UserInput'
-import type { OpportunityDetail } from '@/types/opportunity'
+import type { OpportunityDetail, UserProfile, CompatibilityResult } from '@/types/opportunity'
 import type { Message as ChatMessage } from '@/types/chat'
-import { sendChatMessage, type ChatMessage as APIChatMessage, type OpportunityContext } from '@/services/api'
-import { loadUserProfile } from '@/utils/profileStorage'
+import {
+  sendChatMessage,
+  type ChatMessage as APIChatMessage,
+  type OpportunityWithScore,
+  type OpportunitiesContext
+} from '@/services/api'
 
-interface PortiAssistantProps {
-  opportunity: OpportunityDetail
+interface OpportunitiesAssistantProps {
+  opportunities: Array<{
+    opportunity: OpportunityDetail
+    compatibility: CompatibilityResult | null
+  }>
+  userProfile: UserProfile | null
+  hasFilters?: boolean
+  totalCount?: number
 }
 
-export function PortiAssistant({ opportunity }: PortiAssistantProps) {
+export function OpportunitiesAssistant({
+  opportunities,
+  userProfile,
+  hasFilters = false,
+  totalCount
+}: OpportunitiesAssistantProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // Gera uma chave única baseada nos IDs das oportunidades para forçar reset do chat quando mudar
+  const opportunitiesKey = useMemo(() => {
+    return opportunities.map(o => o.opportunity.id).join(',')
+  }, [opportunities])
+
+  // Reseta as mensagens quando as oportunidades mudarem (filtros aplicados)
+  useEffect(() => {
+    if (isOpen) {
+      setMessages([])
+    }
+  }, [opportunitiesKey])
 
   // Auto-scroll quando há novas mensagens
   useEffect(() => {
@@ -41,7 +68,7 @@ export function PortiAssistant({ opportunity }: PortiAssistantProps) {
   const welcomeMessage: ChatMessage = {
     id: 'welcome',
     role: 'bot',
-    content: `Oi! Sou o Porti 🐢 e estou aqui pra te ajudar com essa oportunidade: "${opportunity.title}". Pode me perguntar qualquer coisa!`,
+    content: `Oi! Sou o Porti 🐢 e estou aqui pra te ajudar a explorar e comparar as ${opportunities.length} oportunidade${opportunities.length !== 1 ? 's' : ''} ${hasFilters ? 'filtradas' : 'disponíveis'}. Pode me perguntar sobre qualquer uma delas!`,
     type: 'text',
     timestamp: new Date()
   }
@@ -60,36 +87,52 @@ export function PortiAssistant({ opportunity }: PortiAssistantProps) {
     setIsTyping(true)
 
     try {
-      // Carrega perfil do usuário
-      const userProfile = loadUserProfile()
+      // Formata contexto de múltiplas oportunidades para o backend
+      const opportunitiesWithScore: OpportunityWithScore[] = opportunities.map(({ opportunity, compatibility }) => {
+        // Converte deadline para string ISO de forma segura
+        let deadlineString: string | undefined
+        if (opportunity.deadline) {
+          if (opportunity.deadline instanceof Date) {
+            deadlineString = opportunity.deadline.toISOString()
+          } else if (typeof opportunity.deadline === 'string') {
+            deadlineString = opportunity.deadline
+          }
+        }
 
-      // Formata contexto da oportunidade para o backend
-      const opportunityContext: OpportunityContext = {
-        id: opportunity.id,
-        title: opportunity.title,
-        category: opportunity.category,
-        shortDescription: opportunity.shortDescription,
-        fullDescription: opportunity.fullDescription,
-        requirements: opportunity.requirements.map(req => ({
-          type: req.type,
-          description: req.description,
-          required: req.required,
-        })),
-        benefits: opportunity.benefits.map(b => ({
-          icon: b.icon,
-          title: b.title,
-          description: b.description,
-        })),
-        steps: opportunity.steps.map(s => ({
-          order: s.order,
-          title: s.title,
-          description: s.description,
-        })),
-        deadline: opportunity.deadline ? opportunity.deadline.toISOString() : undefined,
-        hasDeadline: opportunity.hasDeadline,
-        mainBenefit: opportunity.mainBenefit,
-        officialLink: opportunity.officialLink,
-        targetAudience: opportunity.targetAudience,
+        return {
+          id: opportunity.id,
+          title: opportunity.title,
+          category: opportunity.category,
+          shortDescription: opportunity.shortDescription,
+          fullDescription: opportunity.fullDescription,
+          requirements: opportunity.requirements.map(req => ({
+            type: req.type,
+            description: req.description,
+            required: req.required,
+          })),
+          benefits: opportunity.benefits.map(b => ({
+            icon: b.icon,
+            title: b.title,
+            description: b.description,
+          })),
+          steps: opportunity.steps.map(s => ({
+            order: s.order,
+            title: s.title,
+            description: s.description,
+          })),
+          deadline: deadlineString,
+          hasDeadline: opportunity.hasDeadline,
+          mainBenefit: opportunity.mainBenefit,
+          officialLink: opportunity.officialLink,
+          targetAudience: opportunity.targetAudience,
+          compatibilityScore: compatibility?.percentage ?? undefined,
+        }
+      })
+
+      const opportunitiesContext: OpportunitiesContext = {
+        opportunities: opportunitiesWithScore,
+        totalCount: totalCount ?? opportunities.length,
+        hasFilters,
       }
 
       // Converte histórico de mensagens para formato da API
@@ -99,12 +142,11 @@ export function PortiAssistant({ opportunity }: PortiAssistantProps) {
       }))
 
       // Chama o backend
-      // Só inclui userProfile se não for null
       const response = await sendChatMessage({
         message: content,
         conversationHistory,
         ...(userProfile && { userProfile }),
-        opportunityContext,
+        opportunitiesContext,
       })
 
       // Adiciona resposta do bot
@@ -162,7 +204,7 @@ export function PortiAssistant({ opportunity }: PortiAssistantProps) {
         {/* Tooltip */}
         <div className="absolute bottom-full right-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
           <div className="bg-gray-900 text-white text-xs rounded-lg py-1.5 px-3 whitespace-nowrap">
-            💬 Tirar dúvida com Porti
+            💬 Conversar com Porti
           </div>
         </div>
       </motion.button>
@@ -190,7 +232,7 @@ export function PortiAssistant({ opportunity }: PortiAssistantProps) {
                       Assistente Porti
                     </SheetTitle>
                     <SheetDescription className="text-sm text-gray-600 mt-0.5">
-                      Tire suas dúvidas sobre esta oportunidade
+                      Tire suas dúvidas sobre as oportunidades
                     </SheetDescription>
                   </div>
                 </div>
@@ -220,7 +262,7 @@ export function PortiAssistant({ opportunity }: PortiAssistantProps) {
             <div className="[&>div]:!static [&>div]:!bg-white [&>div]:!border-t">
               <UserInput
                 onSend={handleSendMessage}
-                placeholder="Digite sua dúvida..."
+                placeholder="Pergunte sobre as oportunidades..."
               />
             </div>
           </div>

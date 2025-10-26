@@ -31,7 +31,7 @@ export default function ChatContainer() {
         block: 'end',
       })
     }
-  }, [messages, isTyping])
+  }, [messages, isTyping, selectedInteresses, isCompleted])
 
   // Última mensagem com opções de quick reply
   const lastMessage = messages[messages.length - 1]
@@ -131,7 +131,7 @@ export default function ChatContainer() {
             </motion.div>
           )}
 
-          {/* Scroll anchor */}
+          {/* Scroll anchor - posicionado após todos elementos interativos */}
           <div ref={messagesEndRef} />
         </div>
         </div>

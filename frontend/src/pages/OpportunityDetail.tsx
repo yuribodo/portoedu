@@ -90,11 +90,23 @@ export default function OpportunityDetail() {
         {/* Card de Overview com banner */}
         <OpportunityOverview opportunity={opportunity} />
 
-        {/* Seção de compatibilidade */}
+        {/* Prazo - informação importante */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.3 }}
+        >
+          <DeadlineBanner
+            deadline={opportunity.deadline}
+            hasDeadline={opportunity.hasDeadline}
+          />
+        </motion.div>
+
+        {/* Seção de compatibilidade */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.3 }}
         >
           <CompatibilitySection compatibility={compatibility} />
         </motion.div>
@@ -104,7 +116,7 @@ export default function OpportunityDetail() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, duration: 0.3 }}
+            transition={{ delay: 0.2, duration: 0.3 }}
           >
             <CareerImpactSection
               title={opportunity.careerImpact.title}
@@ -119,7 +131,7 @@ export default function OpportunityDetail() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.3 }}
+          transition={{ delay: 0.25, duration: 0.3 }}
         >
           <BenefitsCard
             benefits={opportunity.benefits}
@@ -131,21 +143,9 @@ export default function OpportunityDetail() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25, duration: 0.3 }}
-        >
-          <StepsList steps={opportunity.steps} />
-        </motion.div>
-
-        {/* Prazo */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.3 }}
         >
-          <DeadlineBanner
-            deadline={opportunity.deadline}
-            hasDeadline={opportunity.hasDeadline}
-          />
+          <StepsList steps={opportunity.steps} />
         </motion.div>
 
         {/* Contexto do Porti (se tiver) */}

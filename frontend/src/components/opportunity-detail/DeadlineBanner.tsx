@@ -12,10 +12,10 @@ interface DeadlineBannerProps {
 export function DeadlineBanner({ deadline, hasDeadline }: DeadlineBannerProps) {
   if (!hasDeadline) {
     return (
-      <Card className="p-6 border border-gray-200 bg-white shadow-[var(--shadow-md)] rounded-[var(--radius-lg)]">
-        <div className="flex items-center gap-3 text-gray-700">
-          <CalendarBlank size={24} weight="bold" />
-          <p className="font-semibold text-base">
+      <Card className="p-6 border-2 border-green-500 bg-white shadow-[var(--shadow-md)] rounded-[var(--radius-lg)]">
+        <div className="flex items-center gap-3">
+          <CalendarBlank size={24} weight="bold" className="text-green-600" />
+          <p className="font-semibold text-base text-green-700">
             Inscrições abertas o ano todo
           </p>
         </div>
@@ -29,12 +29,12 @@ export function DeadlineBanner({ deadline, hasDeadline }: DeadlineBannerProps) {
 
   if (isExpired) {
     return (
-      <Card className="p-6 border border-gray-300 bg-white shadow-[var(--shadow-md)] rounded-[var(--radius-lg)]">
-        <div className="flex items-center gap-3 text-gray-600">
-          <Clock size={24} weight="bold" />
+      <Card className="p-6 border-2 border-red-500 bg-white shadow-[var(--shadow-md)] rounded-[var(--radius-lg)]">
+        <div className="flex items-center gap-3">
+          <Clock size={24} weight="bold" className="text-red-600" />
           <div>
-            <p className="font-bold text-base">Prazo encerrado</p>
-            <p className="text-sm text-gray-500">
+            <p className="font-bold text-base text-red-700">Prazo encerrado</p>
+            <p className="text-sm text-red-600">
               Esta oportunidade não está mais disponível
             </p>
           </div>
@@ -51,17 +51,17 @@ export function DeadlineBanner({ deadline, hasDeadline }: DeadlineBannerProps) {
     >
       <Card className={cn(
         "p-6 bg-white shadow-[var(--shadow-md)] rounded-[var(--radius-lg)]",
-        isUrgent ? "border-2 border-orange-500" : "border border-gray-200"
+        isUrgent ? "border-2 border-orange-500" : "border-2 border-green-500"
       )}>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           {/* Info do prazo */}
           <div className="flex items-center gap-3">
-            <Clock size={24} weight="bold" className={isUrgent ? "text-orange-600" : "text-gray-700"} />
+            <Clock size={24} weight="bold" className={isUrgent ? "text-orange-600" : "text-green-600"} />
             <div>
-              <p className={cn("font-bold text-base", isUrgent ? "text-orange-600" : "text-gray-900")}>
+              <p className={cn("font-bold text-base", isUrgent ? "text-orange-700" : "text-green-700")}>
                 {deadlineInfo.text}
               </p>
-              <p className="text-sm text-gray-600">
+              <p className={cn("text-sm", isUrgent ? "text-orange-600" : "text-green-600")}>
                 Inscrições até {formatDateLong(deadline)}
               </p>
             </div>

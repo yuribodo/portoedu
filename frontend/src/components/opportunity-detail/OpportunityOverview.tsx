@@ -103,22 +103,20 @@ export function OpportunityOverview({ opportunity }: OpportunityOverviewProps) {
               </Badge>
             </div>
 
-            {/* Descrição completa */}
+            {/* Descrição integrada */}
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">Sobre esta oportunidade</h2>
-              <p className="text-base text-gray-700 leading-relaxed">
-                {opportunity.fullDescription}
-              </p>
-            </div>
-
-            {/* Descrição curta adicional */}
-            {opportunity.shortDescription !== opportunity.fullDescription && (
-              <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  {opportunity.shortDescription}
+              <h2 className="text-lg font-semibold text-gray-900 mb-3">Sobre esta oportunidade</h2>
+              <div className="space-y-3">
+                {opportunity.shortDescription !== opportunity.fullDescription && (
+                  <p className="text-base text-gray-900 font-medium leading-relaxed">
+                    {opportunity.shortDescription}
+                  </p>
+                )}
+                <p className="text-base text-gray-700 leading-relaxed">
+                  {opportunity.fullDescription}
                 </p>
               </div>
-            )}
+            </div>
 
             {/* Para quem é */}
             <div className="pt-6 border-t border-gray-200">
@@ -126,14 +124,29 @@ export function OpportunityOverview({ opportunity }: OpportunityOverviewProps) {
               <p className="text-base text-gray-700">{opportunity.targetAudience}</p>
             </div>
 
-            {/* O que você vai ganhar (resumo de benefícios) */}
-            <div className="bg-green-50 border border-green-200 rounded-xl p-5">
-              <h3 className="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                ✨ O que você vai ganhar
+            {/* Card unificado de benefícios */}
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 space-y-4">
+              <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+                <span>🎁</span>
+                O que você vai ganhar
               </h3>
-              <p className="text-base text-gray-800 font-medium">
-                {opportunity.mainBenefit}
-              </p>
+
+              {/* Preview dos principais benefícios */}
+              {opportunity.benefits.length > 0 && (
+                <div className="grid grid-cols-1 gap-2.5 pt-3 border-t border-gray-200">
+                  {opportunity.benefits.slice(0, 3).map((benefit, index) => (
+                    <div key={index} className="flex items-center gap-2.5">
+                      <span className="text-xl flex-shrink-0">{benefit.icon}</span>
+                      <span className="text-sm font-medium text-gray-800">{benefit.title}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {opportunity.benefits.length > 3 && (
+                <p className="text-xs text-gray-600 italic">
+                  + {opportunity.benefits.length - 3} outros benefícios (veja abaixo)
+                </p>
+              )}
             </div>
           </motion.div>
         </div>

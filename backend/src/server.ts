@@ -65,7 +65,7 @@ async function createServer() {
   // ===== ERROR HANDLING =====
 
   // Handler global de erros
-  fastify.setErrorHandler((error, request, reply) => {
+  fastify.setErrorHandler((error, _request, reply) => {
     fastify.log.error(error)
 
     // Erro de validação

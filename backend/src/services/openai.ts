@@ -49,13 +49,55 @@ export interface OpportunityContext {
 }
 
 /**
+ * Oportunidade com score de compatibilidade para contexto do chat
+ */
+export interface OpportunityWithScore {
+  id: string
+  title: string
+  category: string
+  shortDescription: string
+  fullDescription: string
+  requirements: Array<{
+    type: string
+    description: string
+    required: boolean
+  }>
+  benefits: Array<{
+    icon: string
+    title: string
+    description: string
+  }>
+  steps: Array<{
+    order: number
+    title: string
+    description: string
+  }>
+  deadline?: string
+  hasDeadline: boolean
+  mainBenefit: string
+  officialLink: string
+  targetAudience: string
+  compatibilityScore?: number // Score de 0 a 100
+}
+
+/**
+ * Contexto de múltiplas oportunidades para chat de exploração
+ */
+export interface OpportunitiesContext {
+  opportunities: OpportunityWithScore[]
+  totalCount: number
+  hasFilters: boolean
+}
+
+/**
  * Request do chat
  */
 export interface ChatRequest {
   message: string
   conversationHistory?: ChatMessage[]
   userProfile?: UserProfile
-  opportunityContext?: OpportunityContext
+  opportunityContext?: OpportunityContext // Para chat de oportunidade específica
+  opportunitiesContext?: OpportunitiesContext // Para chat de exploração de múltiplas oportunidades
 }
 
 /**
@@ -70,9 +112,85 @@ export interface ChatResponse {
 }
 
 /**
+ * Cria o prompt para contexto de múltiplas oportunidades (exploração)
+ */
+function createOpportunitiesPrompt(opportunitiesContext: OpportunitiesContext): string {
+  const { opportunities, totalCount, hasFilters } = opportunitiesContext
+
+  // Ordena oportunidades por score de compatibilidade (maior para menor)
+  const sortedOpportunities = [...opportunities].sort((a, b) => {
+    const scoreA = a.compatibilityScore ?? 0
+    const scoreB = b.compatibilityScore ?? 0
+    return scoreB - scoreA
+  })
+
+  // Top 5 oportunidades para contexto detalhado
+  const topOpportunities = sortedOpportunities.slice(0, 5)
+
+  // Lista todas as oportunidades com scores (resumo)
+  const allOpportunitiesSummary = sortedOpportunities
+    .map((opp, i) => {
+      const score = opp.compatibilityScore ? ` (${opp.compatibilityScore}% compatível)` : ''
+      return `${i + 1}. ${opp.title} - ${opp.category}${score}`
+    })
+    .join('\n')
+
+  // Detalhes das top 5
+  const topOpportunitiesDetails = topOpportunities
+    .map((opp, i) => {
+      const score = opp.compatibilityScore ? ` (Compatibilidade: ${opp.compatibilityScore}%)` : ''
+      const deadline = opp.hasDeadline && opp.deadline
+        ? `\n   ⏰ Prazo: ${opp.deadline}`
+        : '\n   ⏰ Inscrições abertas'
+
+      return `
+📌 ${i + 1}. ${opp.title}${score}
+   🏷️ Categoria: ${opp.category}
+   📝 ${opp.shortDescription}
+   💡 Benefício principal: ${opp.mainBenefit}${deadline}
+   🎯 Público: ${opp.targetAudience}
+   🔗 ${opp.officialLink}
+      `.trim()
+    })
+    .join('\n\n')
+
+  return `
+CONTEXTO DE EXPLORAÇÃO DE OPORTUNIDADES:
+Você está ajudando o usuário a explorar e comparar ${opportunities.length} oportunidade(s) ${hasFilters ? 'filtradas' : 'disponíveis'} de um total de ${totalCount}.
+
+📊 TODAS AS OPORTUNIDADES VISÍVEIS:
+${allOpportunitiesSummary}
+
+🔝 TOP ${topOpportunities.length} OPORTUNIDADES (Detalhadas):
+${topOpportunitiesDetails}
+
+INSTRUÇÕES ESPECIAIS PARA CHAT DE EXPLORAÇÃO:
+- Ajude o usuário a COMPARAR e EXPLORAR as oportunidades listadas acima
+- Use os scores de compatibilidade para fazer recomendações personalizadas
+- Se o usuário perguntar sobre uma oportunidade específica, use os detalhes fornecidos
+- Se perguntar sobre comparações, considere categorias, prazos e compatibilidade
+- Sugira as oportunidades mais compatíveis quando apropriado
+- Se o usuário buscar algo específico, filtre mentalmente as oportunidades relevantes
+- Incentive o usuário a clicar nas oportunidades que mais combinam com ele
+- Seja específica e prática, citando nomes reais das oportunidades
+- Se houver oportunidades com prazo próximo, mencione com urgência mas sem pressão
+
+IMPORTANTE:
+- Responda perguntas sobre QUALQUER uma das ${opportunities.length} oportunidades listadas
+- Priorize oportunidades com maior compatibilidade nas recomendações
+- Seja direta e objetiva, evite listas longas (máximo 3-4 sugestões)
+- Personalize com base no perfil do usuário (se disponível)
+`
+}
+
+/**
  * Cria o system prompt da Porti baseado no perfil do usuário e contexto da oportunidade
  */
-function createSystemPrompt(userProfile?: UserProfile, opportunityContext?: OpportunityContext): string {
+function createSystemPrompt(
+  userProfile?: UserProfile,
+  opportunityContext?: OpportunityContext,
+  opportunitiesContext?: OpportunitiesContext
+): string {
   const profileContext = userProfile
     ? `
 Contexto do usuário:
@@ -82,6 +200,7 @@ Contexto do usuário:
 `
     : 'O usuário ainda não forneceu informações de perfil.'
 
+  // Contexto de oportunidade única (página de detalhes)
   const opportunityInfo = opportunityContext
     ? `
 
@@ -125,6 +244,11 @@ INSTRUÇÕES ESPECIAIS PARA CHAT CONTEXTUAL:
 `
     : ''
 
+  // Contexto de múltiplas oportunidades (página de listagem)
+  const opportunitiesInfo = opportunitiesContext
+    ? createOpportunitiesPrompt(opportunitiesContext)
+    : ''
+
   return `Você é a Porti, uma capivara estudiosa e gentil que ajuda jovens brasileiros a descobrir oportunidades educacionais e benefícios sociais.
 
 PERSONALIDADE:
@@ -157,6 +281,7 @@ IMPORTANTE:
 
 ${profileContext}
 ${opportunityInfo}
+${opportunitiesInfo}
 
 Converse de forma natural e acolhedora. Seu objetivo é fazer o usuário se sentir apoiado e confiante!`
 }
@@ -166,7 +291,11 @@ Converse de forma natural e acolhedora. Seu objetivo é fazer o usuário se sent
  */
 export async function sendChatMessage(request: ChatRequest): Promise<ChatResponse> {
   try {
-    const systemPrompt = createSystemPrompt(request.userProfile, request.opportunityContext)
+    const systemPrompt = createSystemPrompt(
+      request.userProfile,
+      request.opportunityContext,
+      request.opportunitiesContext
+    )
 
     const messages: ChatMessage[] = [
       { role: 'system', content: systemPrompt },

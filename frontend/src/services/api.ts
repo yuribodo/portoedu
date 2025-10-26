@@ -42,13 +42,55 @@ export interface OpportunityContext {
 }
 
 /**
+ * Oportunidade com score de compatibilidade para contexto do chat
+ */
+export interface OpportunityWithScore {
+  id: string
+  title: string
+  category: string
+  shortDescription: string
+  fullDescription: string
+  requirements: Array<{
+    type: string
+    description: string
+    required: boolean
+  }>
+  benefits: Array<{
+    icon: string
+    title: string
+    description: string
+  }>
+  steps: Array<{
+    order: number
+    title: string
+    description: string
+  }>
+  deadline?: string
+  hasDeadline: boolean
+  mainBenefit: string
+  officialLink: string
+  targetAudience: string
+  compatibilityScore?: number // Score de 0 a 100
+}
+
+/**
+ * Contexto de múltiplas oportunidades para chat de exploração
+ */
+export interface OpportunitiesContext {
+  opportunities: OpportunityWithScore[]
+  totalCount: number
+  hasFilters: boolean
+}
+
+/**
  * Request para o chat
  */
 export interface ChatRequest {
   message: string
   conversationHistory?: ChatMessage[]
   userProfile?: UserProfile
-  opportunityContext?: OpportunityContext
+  opportunityContext?: OpportunityContext // Para chat de oportunidade específica
+  opportunitiesContext?: OpportunitiesContext // Para chat de exploração de múltiplas oportunidades
 }
 
 /**
