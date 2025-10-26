@@ -97,6 +97,13 @@ export const opportunitiesData: OpportunityDetail[] = [
     modality: 'presencial' as const,
     duration: { amount: 4, unit: 'anos' as const },
     cost: 'bolsa-integral' as const,
+    location: {
+      venue: 'Ministério da Educação (MEC)',
+      address: 'Esplanada dos Ministérios, Bloco L, Ed. Sede',
+      city: 'Brasília',
+      state: 'DF',
+      coordinates: { lat: -15.795096, lng: -47.8730446 }
+    },
     requirements: [
       { type: 'idade' as const, description: 'Qualquer idade', required: true, value: { min: 14 } },
       { type: 'escolaridade' as const, description: 'Ensino médio completo ou cursando 3º ano', required: true },
@@ -164,6 +171,13 @@ export const opportunitiesData: OpportunityDetail[] = [
     modality: 'presencial' as const,
     duration: { amount: 6, unit: 'meses' as const },
     cost: 'bolsa-integral' as const,
+    location: {
+      venue: 'CAPES - Coordenação de Aperfeiçoamento de Pessoal de Nível Superior',
+      address: 'Setor Bancário Norte (SBN), Quadra 2, Bloco L, Lote 06',
+      city: 'Brasília',
+      state: 'DF',
+      coordinates: { lat: -15.7841, lng: -47.8869 }
+    },
     requirements: [
       { type: 'idade' as const, description: 'Entre 18 e 30 anos', required: true, value: { min: 18, max: 30 } },
       { type: 'escolaridade' as const, description: 'Cursando graduação', required: true },
@@ -195,6 +209,13 @@ export const opportunitiesData: OpportunityDetail[] = [
     modality: 'presencial' as const,
     duration: { amount: 6, unit: 'meses' as const },
     cost: 'gratuito' as const,
+    location: {
+      venue: 'IMPA - Instituto de Matemática Pura e Aplicada',
+      address: 'Estrada Dona Castorina, 110, Jardim Botânico',
+      city: 'Rio de Janeiro',
+      state: 'RJ',
+      coordinates: { lat: -22.9663879, lng: -43.2379293 }
+    },
     requirements: [
       { type: 'idade' as const, description: 'Estar cursando ensino fundamental ou médio', required: true, value: { min: 10, max: 19 } },
       { type: 'escolaridade' as const, description: 'Ensino fundamental ou médio', required: true },
@@ -231,6 +252,13 @@ export const opportunitiesData: OpportunityDetail[] = [
     modality: 'presencial' as const,
     duration: { amount: 1, unit: 'anos' as const },
     cost: 'pago' as const,
+    location: {
+      venue: 'CIEE - Centro de Integração Empresa-Escola',
+      address: 'Rua Taquari, 546, Sala 201C, Mooca',
+      city: 'São Paulo',
+      state: 'SP',
+      coordinates: { lat: -23.5496754, lng: -46.5960718 }
+    },
     requirements: [
       { type: 'idade' as const, description: 'Entre 14 e 24 anos', required: true, value: { min: 14, max: 24 } },
       { type: 'escolaridade' as const, description: 'Cursando ou ter concluído ensino fundamental', required: true },
@@ -267,6 +295,13 @@ export const opportunitiesData: OpportunityDetail[] = [
     modality: 'presencial' as const,
     duration: { amount: 1, unit: 'anos' as const },
     cost: 'bolsa-integral' as const,
+    location: {
+      venue: 'CNPq - Conselho Nacional de Desenvolvimento Científico e Tecnológico',
+      address: 'SHIS QI 01, Conjunto B, Edifício Santos Dumont, Lago Sul',
+      city: 'Brasília',
+      state: 'DF',
+      coordinates: { lat: -15.8293, lng: -47.8939 }
+    },
     requirements: [
       { type: 'idade' as const, description: 'Estar cursando ensino médio', required: true, value: { min: 14, max: 19 } },
       { type: 'escolaridade' as const, description: 'Ensino médio em andamento', required: true },
@@ -305,6 +340,13 @@ export const opportunitiesData: OpportunityDetail[] = [
     modality: 'presencial' as const,
     duration: { amount: 4, unit: 'anos' as const },
     cost: 'bolsa-parcial' as const,
+    location: {
+      venue: 'Ministério da Educação (MEC)',
+      address: 'Esplanada dos Ministérios, Bloco L, Ed. Sede',
+      city: 'Brasília',
+      state: 'DF',
+      coordinates: { lat: -15.795096, lng: -47.8730446 }
+    },
     requirements: [
       { type: 'idade' as const, description: 'Qualquer idade', required: true, value: { min: 16 } },
       { type: 'escolaridade' as const, description: 'Ensino médio completo', required: true },
@@ -377,6 +419,13 @@ export const opportunitiesData: OpportunityDetail[] = [
     modality: 'hibrido' as const,
     duration: { amount: 6, unit: 'meses' as const },
     cost: 'gratuito' as const,
+    location: {
+      venue: 'SEBRAE Nacional - Sede',
+      address: 'SGAS 605, Conjunto A, Módulo 30/31, Asa Sul',
+      city: 'Brasília',
+      state: 'DF',
+      coordinates: { lat: -15.8169477, lng: -47.8893667 }
+    },
     requirements: [
       { type: 'idade' as const, description: 'A partir de 18 anos', required: true, value: { min: 18 } },
       { type: 'interesse' as const, description: 'Ter ideia ou startup em andamento', required: true, value: ['empreendedorismo', 'negócios'] },
@@ -484,6 +533,13 @@ export const opportunitiesData: OpportunityDetail[] = [
     modality: 'presencial' as const,
     duration: { amount: 4, unit: 'meses' as const },
     cost: 'gratuito' as const,
+    location: {
+      venue: 'Instituto de Computação - Unicamp',
+      address: 'Av. Albert Einstein, 1251, Cidade Universitária, Barão Geraldo',
+      city: 'Campinas',
+      state: 'SP',
+      coordinates: { lat: -22.8164, lng: -47.0688 }
+    },
     requirements: [
       { type: 'idade' as const, description: 'Estar cursando ensino fundamental, médio ou superior', required: true, value: { min: 10, max: 24 } },
       { type: 'interesse' as const, description: 'Interesse em programação e algoritmos', required: true, value: ['tecnologia', 'programação'] },
@@ -557,6 +613,13 @@ export const opportunitiesData: OpportunityDetail[] = [
     modality: 'presencial' as const,
     duration: { amount: 4, unit: 'meses' as const },
     cost: 'pago' as const,
+    location: {
+      venue: 'STB - Student Travel Bureau',
+      address: 'Alameda Campinas, 1070, Edifício Paulista Star, Jardim Paulista',
+      city: 'São Paulo',
+      state: 'SP',
+      coordinates: { lat: -23.5668653, lng: -46.6541099 }
+    },
     requirements: [
       { type: 'idade' as const, description: 'Entre 18 e 28 anos', required: true, value: { min: 18, max: 28 } },
       { type: 'escolaridade' as const, description: 'Cursando graduação', required: true },
@@ -594,6 +657,13 @@ export const opportunitiesData: OpportunityDetail[] = [
     modality: 'presencial' as const,
     duration: { amount: 4, unit: 'anos' as const },
     cost: 'gratuito' as const,
+    location: {
+      venue: 'Ministério da Educação (MEC)',
+      address: 'Esplanada dos Ministérios, Bloco L, Ed. Sede',
+      city: 'Brasília',
+      state: 'DF',
+      coordinates: { lat: -15.795096, lng: -47.8730446 }
+    },
     requirements: [
       { type: 'idade' as const, description: 'Qualquer idade', required: true, value: { min: 16 } },
       { type: 'escolaridade' as const, description: 'Ensino médio completo', required: true },
@@ -632,6 +702,13 @@ export const opportunitiesData: OpportunityDetail[] = [
     modality: 'presencial' as const,
     duration: { amount: 18, unit: 'meses' as const },
     cost: 'gratuito' as const,
+    location: {
+      venue: 'SENAI-SP - Departamento Regional de São Paulo',
+      address: 'Avenida Paulista, 1313, Bela Vista',
+      city: 'São Paulo',
+      state: 'SP',
+      coordinates: { lat: -23.5634997, lng: -46.6544513 }
+    },
     requirements: [
       { type: 'idade' as const, description: 'A partir de 14 anos', required: true, value: { min: 14 } },
       { type: 'escolaridade' as const, description: 'Cursando ou concluído ensino médio', required: true },
@@ -669,6 +746,13 @@ export const opportunitiesData: OpportunityDetail[] = [
     modality: 'presencial' as const,
     duration: { amount: 3, unit: 'meses' as const },
     cost: 'gratuito' as const,
+    location: {
+      venue: 'UERJ - Universidade do Estado do Rio de Janeiro',
+      address: 'Rua São Francisco Xavier, 524, Maracanã',
+      city: 'Rio de Janeiro',
+      state: 'RJ',
+      coordinates: { lat: -22.9113381, lng: -43.2362446 }
+    },
     requirements: [
       { type: 'idade' as const, description: 'Estar cursando ensino fundamental ou médio', required: true, value: { min: 8, max: 19 } },
       { type: 'interesse' as const, description: 'Interesse em astronomia e ciências', required: true, value: ['ciências', 'astronomia'] },
@@ -705,6 +789,13 @@ export const opportunitiesData: OpportunityDetail[] = [
     modality: 'hibrido' as const,
     duration: { amount: 6, unit: 'meses' as const },
     cost: 'gratuito' as const,
+    location: {
+      venue: 'Estação Hack (WeWork)',
+      address: 'Avenida Paulista, 1374, Bela Vista',
+      city: 'São Paulo',
+      state: 'SP',
+      coordinates: { lat: -23.5624065, lng: -46.6542724 }
+    },
     requirements: [
       { type: 'idade' as const, description: 'A partir de 18 anos', required: true, value: { min: 18 } },
       { type: 'interesse' as const, description: 'Interesse em tecnologia', required: true, value: ['tecnologia', 'programação'] },

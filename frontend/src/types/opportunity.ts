@@ -61,6 +61,17 @@ export interface OpportunityBenefit {
   description: string
 }
 
+export interface OpportunityLocation {
+  address: string
+  city: string
+  state: string
+  coordinates: {
+    lat: number
+    lng: number
+  }
+  venue?: string // Nome do local (ex: "Campus USP", "Sede SEBRAE")
+}
+
 export interface OpportunityDetail {
   id: string
   title: string
@@ -74,6 +85,7 @@ export interface OpportunityDetail {
   modality: OpportunityModality
   duration?: OpportunityDuration
   cost: OpportunityCost
+  location?: OpportunityLocation // Localização para oportunidades presenciais/híbridas
 
   // Requisitos e elegibilidade
   requirements: OpportunityRequirement[]

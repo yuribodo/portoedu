@@ -54,6 +54,17 @@ export interface OpportunityBenefit {
   description: string
 }
 
+export interface OpportunityLocation {
+  address: string
+  city: string
+  state: string
+  coordinates: {
+    lat: number
+    lng: number
+  }
+  venue?: string
+}
+
 export interface OpportunityDetail {
   id: string
   title: string
@@ -66,6 +77,7 @@ export interface OpportunityDetail {
   modality: OpportunityModality
   duration?: OpportunityDuration
   cost: OpportunityCost
+  location?: OpportunityLocation
 
   requirements: OpportunityRequirement[]
   targetAudience: string

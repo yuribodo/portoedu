@@ -9,6 +9,7 @@ import { StepsList } from '@/components/opportunity-detail/StepsList'
 import { DeadlineBanner } from '@/components/opportunity-detail/DeadlineBanner'
 import { ExternalLinkButton } from '@/components/opportunity-detail/ExternalLinkButton'
 import { PortiAssistant } from '@/components/opportunity-detail/PortiAssistant'
+import { LocationMap } from '@/components/opportunity-detail/LocationMap'
 import { getOpportunityById } from '@/data/opportunitiesDetailed'
 import { fetchOpportunityById } from '@/services/api'
 import { calculateCompatibility } from '@/utils/matchCalculator'
@@ -172,11 +173,22 @@ export default function OpportunityDetail() {
           </Card>
         )}
 
+        {/* Mapa de localização - apenas para oportunidades presenciais e híbridas */}
+        {(opportunity.modality === 'presencial' || opportunity.modality === 'hibrido') && opportunity.location && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.3 }}
+          >
+            <LocationMap location={opportunity.location} title={opportunity.title} />
+          </motion.div>
+        )}
+
         {/* Botão para site oficial - no final do conteúdo */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.3 }}
+          transition={{ delay: 0.45, duration: 0.3 }}
         >
           <ExternalLinkButton link={opportunity.officialLink} />
         </motion.div>
