@@ -2,13 +2,17 @@
 
 Backend da plataforma PortoEdu construído com **Fastify**, **TypeScript** e **OpenAI**.
 
+A Porti, nossa capivara estudiosa, usa inteligência artificial para ajudar jovens brasileiros a descobrir oportunidades educacionais personalizadas.
+
 ## 📚 Stack Tecnológica
 
 - **Fastify** - Framework web rápido e eficiente
 - **TypeScript** - Tipagem estática para JavaScript
-- **OpenAI** - IA para o chat com a Porti
+- **OpenAI** - IA conversacional (GPT-4o-mini) para chat e recomendações
 - **Zod** - Validação de schemas e dados
 - **@fastify/cors** - Suporte a CORS
+- **tsx** - Execução TypeScript em desenvolvimento
+- **dotenv** - Gerenciamento de variáveis de ambiente
 
 ## 🏗️ Estrutura do Projeto
 
@@ -18,19 +22,24 @@ backend/
 │   ├── config/
 │   │   └── env.ts              # Validação de variáveis de ambiente
 │   ├── routes/
-│   │   ├── chat.ts             # Rotas de chat
+│   │   ├── chat.ts             # Rotas de chat com IA
+│   │   ├── recommendations.ts  # Rotas de recomendações personalizadas
 │   │   └── opportunities.ts    # Rotas de oportunidades
 │   ├── services/
 │   │   └── openai.ts           # Serviço de integração OpenAI
 │   ├── data/
-│   │   └── opportunities.ts    # Dados de oportunidades
+│   │   └── opportunities.ts    # Dados de oportunidades educacionais
 │   ├── types/
 │   │   └── opportunity.ts      # Tipos TypeScript
 │   └── server.ts               # Entry point do servidor
+├── api/
+│   └── index.ts                # Serverless handler para Vercel
+├── dist/                       # Build compilado
 ├── .env.example                # Template de variáveis de ambiente
 ├── .env                        # Suas variáveis (não commitado)
 ├── package.json
 ├── tsconfig.json
+├── vercel.json                 # Configuração de deploy
 └── README.md
 ```
 
@@ -50,9 +59,9 @@ npm install
 3. Vá em **API Keys** → **Create new secret key**
 4. Copie a chave (ela só será mostrada uma vez!)
 5. Em **Billing**, adicione um método de pagamento
-6. Adicione **pelo menos $5 USD** de crédito (suficiente para todo o hackathon)
+6. Adicione **pelo menos $5 USD** de crédito (suficiente para o projeto)
 
-> **Dica**: O modelo `gpt-4o-mini` é muito barato. Com $5 você faz milhares de requisições!
+> **Dica**: O modelo `gpt-4o-mini` é muito econômico. Com $5 você faz milhares de requisições!
 
 ### 3. Configurar Variáveis de Ambiente
 
@@ -95,7 +104,7 @@ npm start
 ## 📡 Endpoints Disponíveis
 
 ### Health Check
-```bash
+```http
 GET /health
 ```
 
@@ -111,14 +120,16 @@ Verifica se o servidor está funcionando e se a OpenAI está configurada.
 }
 ```
 
+---
+
 ### Recomendações Personalizadas
 
-```bash
+```http
 POST /api/recommendations
 Content-Type: application/json
 ```
 
-**Descrição:** A Porti analisa o perfil do usuário e recomenda as melhores oportunidades com explicações personalizadas.
+**Descrição:** A Porti analisa o perfil do usuário e recomenda as melhores oportunidades com explicações personalizadas e próximos passos.
 
 **Request Body:**
 ```json
@@ -151,25 +162,15 @@ Content-Type: application/json
         "title": "ProUni 2025 - Bolsa Integral",
         "category": "bolsa",
         "icon": "🎓",
-        "shortDescription": "Bolsa integral para graduação...",
+        "shortDescription": "Bolsa integral para graduação em universidades privadas",
         "deadline": "2025-02-15T23:59:59.000Z",
         "hasDeadline": true,
         "officialLink": "https://acessounico.mec.gov.br/prouni",
         "tags": ["graduação", "universidade", "bolsa-integral", "enem"]
       }
-    },
-    {
-      "opportunityId": "bootcamp-tech-2025",
-      "matchScore": 90,
-      "reason": "Seu interesse em tecnologia combina muito com esse bootcamp gratuito! Em 3 meses você aprende programação do zero.",
-      "nextSteps": [
-        "Inscrever-se no site do bootcamp",
-        "Fazer o teste lógico online"
-      ],
-      "opportunity": { ... }
     }
   ],
-  "summary": "Encontrei 3 oportunidades incríveis para você! As principais são ProUni e o Bootcamp de Tecnologia. Ambas são 100% gratuitas e perfeitas para quem estuda em escola pública. Quer saber mais?",
+  "summary": "Encontrei 3 oportunidades incríveis para você! As principais são ProUni e o Bootcamp de Tecnologia. Ambas são 100% gratuitas e perfeitas para quem estuda em escola pública.",
   "totalEligible": 3
 }
 ```
@@ -177,14 +178,18 @@ Content-Type: application/json
 **Fluxo:**
 1. Filtra oportunidades elegíveis baseado em requisitos (idade, escola, etc)
 2. Usa IA para ranquear as TOP 5 melhores para o perfil
-3. Retorna com explicações personalizadas e próximos passos
+3. Retorna com explicações personalizadas e próximos passos práticos
+
+---
 
 ### Chat com a Porti
 
-```bash
+```http
 POST /api/chat
 Content-Type: application/json
 ```
+
+**Descrição:** Conversa com a Porti, nossa assistente capivara que ajuda a descobrir oportunidades educacionais através de conversação natural.
 
 **Request Body:**
 ```json
@@ -197,7 +202,7 @@ Content-Type: application/json
     },
     {
       "role": "assistant",
-      "content": "Oi! Eu sou a Porti, uma capivara que adora ajudar jovens a encontrar oportunidades! 🦫"
+      "content": "Oi! Eu sou a Porti, uma capivara que adora ajudar jovens a encontrar oportunidades!"
     }
   ],
   "userProfile": {
@@ -212,14 +217,21 @@ Content-Type: application/json
 **Response:**
 ```json
 {
-  "message": "Que legal! Com 17 anos e interesse em tecnologia, você tem várias oportunidades incríveis...",
-  "suggestedActions": []
+  "message": "Que legal! Com 17 anos e interesse em tecnologia, você tem várias oportunidades incríveis, como bootcamps gratuitos e bolsas para cursos técnicos. Quer saber mais sobre alguma delas?",
+  "suggestedActions": [
+    {
+      "type": "view_opportunities",
+      "label": "Ver oportunidades em Tecnologia"
+    }
+  ]
 }
 ```
 
+---
+
 ### Listar Oportunidades
 
-```bash
+```http
 GET /api/opportunities
 GET /api/opportunities?category=bolsa
 GET /api/opportunities?featured=true
@@ -239,23 +251,27 @@ GET /api/opportunities?category=curso&featured=true
       "title": "ProUni 2025 - Bolsa Integral",
       "category": "bolsa",
       "icon": "🎓",
-      "shortDescription": "Bolsa integral para graduação...",
+      "shortDescription": "Bolsa integral para graduação em universidades privadas",
       "featured": true,
-      ...
+      "deadline": "2025-02-15T23:59:59.000Z",
+      "hasDeadline": true,
+      "tags": ["graduação", "universidade", "bolsa-integral"]
     }
   ],
   "total": 3
 }
 ```
 
+---
+
 ### Detalhes de Oportunidade
 
-```bash
+```http
 GET /api/opportunities/:id
 ```
 
 **Exemplo:**
-```bash
+```http
 GET /api/opportunities/prouni-2025
 ```
 
@@ -265,11 +281,30 @@ GET /api/opportunities/prouni-2025
   "id": "prouni-2025",
   "title": "ProUni 2025 - Bolsa Integral",
   "category": "bolsa",
-  "fullDescription": "O Programa Universidade para Todos...",
-  "requirements": [...],
-  "steps": [...],
-  "benefits": [...],
-  ...
+  "fullDescription": "O Programa Universidade para Todos oferece bolsas integrais e parciais...",
+  "requirements": [
+    {
+      "title": "Idade mínima",
+      "description": "Ter pelo menos 14 anos",
+      "icon": "📅"
+    }
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "title": "Fazer o ENEM",
+      "description": "Inscreva-se no ENEM e obtenha nota mínima de 450 pontos",
+      "estimatedTime": "3 meses de preparação"
+    }
+  ],
+  "benefits": [
+    "Bolsa integral (100%) ou parcial (50%)",
+    "Graduação em universidades privadas reconhecidas pelo MEC"
+  ],
+  "deadline": "2025-02-15T23:59:59.000Z",
+  "hasDeadline": true,
+  "officialLink": "https://acessounico.mec.gov.br/prouni",
+  "tags": ["graduação", "universidade", "bolsa-integral", "enem"]
 }
 ```
 
@@ -317,7 +352,7 @@ curl http://localhost:3000/api/opportunities/prouni-2025
 
 ### Com Postman/Insomnia
 
-1. Importe a coleção (ou crie manualmente)
+1. Importe ou crie as requisições manualmente
 2. Configure a base URL: `http://localhost:3000`
 3. Teste cada endpoint
 
@@ -325,7 +360,7 @@ curl http://localhost:3000/api/opportunities/prouni-2025
 
 ### "OPENAI_API_KEY não está configurada"
 
-- Verifique se o arquivo `.env` existe
+- Verifique se o arquivo `.env` existe na raiz do backend
 - Verifique se a chave está no formato correto: `sk-proj-...`
 - Reinicie o servidor após alterar o `.env`
 
@@ -338,8 +373,8 @@ curl http://localhost:3000/api/opportunities/prouni-2025
 ### "API Key da OpenAI inválida" (401)
 
 - Verifique se copiou a chave corretamente
-- A chave pode ter expirado - crie uma nova
-- Verifique se há créditos na conta
+- A chave pode ter expirado - crie uma nova no dashboard da OpenAI
+- Verifique se há créditos suficientes na conta
 
 ### Porta 3000 já está em uso
 
@@ -351,28 +386,84 @@ PORT=3001
 lsof -ti:3000 | xargs kill -9
 ```
 
+### CORS Error no Frontend
+
+- Verifique se `FRONTEND_URL` no `.env` está correto
+- Certifique-se de que o frontend está rodando na URL configurada
+- Reinicie o servidor backend após alterar CORS
+
 ## 📝 Scripts Disponíveis
 
-- `npm run dev` - Inicia servidor em modo desenvolvimento (hot reload)
+- `npm run dev` - Inicia servidor em modo desenvolvimento (hot reload com tsx)
 - `npm run build` - Compila TypeScript para JavaScript
 - `npm start` - Inicia servidor em modo produção
-- `npm run lint` - Verifica tipos TypeScript
+- `npm run lint` - Verifica tipos TypeScript sem emitir arquivos
 
 ## 🔐 Segurança
 
 - **CORS**: Configurado para aceitar apenas requisições do frontend (`http://localhost:5173`)
-- **Validação**: Todos os inputs são validados com Zod
+- **Validação**: Todos os inputs são validados com Zod antes do processamento
 - **Error Handling**: Erros são tratados e não expõem informações sensíveis
-- **Environment**: Nunca commite o arquivo `.env` (já está no `.gitignore`)
+- **Environment**: Arquivo `.env` nunca é commitado (já está no `.gitignore`)
+- **API Keys**: Nunca exponha suas chaves no código ou commits
 
-## 🚀 Próximos Passos (Fase 3 - Opcional)
+## 🚢 Deploy
 
-- [x] ~~Implementar endpoint de recomendações personalizadas~~ **CONCLUÍDO!**
-- [ ] Implementar análise de compatibilidade individual (`POST /api/opportunities/:id/compatibility`)
-- [ ] Adicionar rate limiting
-- [ ] Melhorar logs e monitoramento
-- [ ] Adicionar testes automatizados
-- [ ] Cache de recomendações por perfil
+O backend está configurado para deploy no **Vercel** via serverless functions.
+
+```bash
+# Deploy para produção
+vercel --prod
+
+# Deploy para preview
+vercel
+```
+
+**Configuração necessária no Vercel:**
+- Adicione `OPENAI_API_KEY` nas variáveis de ambiente
+- Configure `FRONTEND_URL` com a URL do frontend em produção
+
+## 💡 Arquitetura
+
+### Fluxo de Recomendações
+
+1. **Filtro Inicial**: Filtra oportunidades por critérios básicos (idade, escola, renda)
+2. **Análise IA**: Usa GPT-4o-mini para ranquear e explicar as melhores matches
+3. **Personalização**: Gera explicações motivadoras e próximos passos específicos
+4. **Response**: Retorna TOP 5 recomendações com dados completos
+
+### Prompts da IA
+
+Os prompts foram otimizados para:
+- Linguagem casual e encorajadora
+- Explicações didáticas e acessíveis
+- Próximos passos práticos e acionáveis
+- Tom empático e motivador
+
+## 📊 Custos Estimados (OpenAI)
+
+Usando `gpt-4o-mini`:
+- **Input**: $0.150 por 1M tokens
+- **Output**: $0.600 por 1M tokens
+
+**Estimativa de uso mensal**:
+- 1.000 conversas de chat = ~$1.50
+- 1.000 recomendações = ~$0.40
+
+**Total**: ~$2 USD/mês para uso moderado
+
+💡 **Dica**: Configure limite de uso no dashboard da OpenAI para controlar custos.
+
+## 🎯 Features Principais
+
+- ✅ Chat conversacional com IA
+- ✅ Recomendações personalizadas
+- ✅ Sistema de oportunidades educacionais
+- ✅ Filtros por categoria e destaque
+- ✅ API RESTful documentada
+- ✅ Validação de dados com Zod
+- ✅ TypeScript para type safety
+- ✅ Deploy serverless ready
 
 ## 📚 Recursos Úteis
 
@@ -380,11 +471,18 @@ lsof -ti:3000 | xargs kill -9
 - [Documentação OpenAI](https://platform.openai.com/docs)
 - [Documentação Zod](https://zod.dev/)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+- [Vercel Deployment](https://vercel.com/docs)
 
 ## 🤝 Contribuindo
 
-Este é um projeto de hackathon. Sinta-se livre para melhorar e adaptar!
+Este projeto nasceu de um hackathon. Contribuições são bem-vindas!
+
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
 
 ---
 
-Feito com ❤️ para o PortoEdu
+Feito com ❤️ pela equipe PortoEdu
