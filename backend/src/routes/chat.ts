@@ -20,7 +20,7 @@ const userProfileSchema = z.object({
 }).optional()
 
 /**
- * Schema para contexto da oportunidade
+ * Schema para contexto de uma oportunidade específica
  */
 const opportunityContextSchema = z.object({
   id: z.string(),
@@ -51,6 +51,47 @@ const opportunityContextSchema = z.object({
 }).optional()
 
 /**
+ * Schema para oportunidade com score de compatibilidade
+ */
+const opportunityWithScoreSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  category: z.string(),
+  shortDescription: z.string(),
+  fullDescription: z.string(),
+  requirements: z.array(z.object({
+    type: z.string(),
+    description: z.string(),
+    required: z.boolean(),
+  })),
+  benefits: z.array(z.object({
+    icon: z.string(),
+    title: z.string(),
+    description: z.string(),
+  })),
+  steps: z.array(z.object({
+    order: z.number(),
+    title: z.string(),
+    description: z.string(),
+  })),
+  deadline: z.string().optional(),
+  hasDeadline: z.boolean(),
+  mainBenefit: z.string(),
+  officialLink: z.string(),
+  targetAudience: z.string(),
+  compatibilityScore: z.number().min(0).max(100).optional(),
+})
+
+/**
+ * Schema para contexto de múltiplas oportunidades
+ */
+const opportunitiesContextSchema = z.object({
+  opportunities: z.array(opportunityWithScoreSchema),
+  totalCount: z.number(),
+  hasFilters: z.boolean(),
+}).optional()
+
+/**
  * Schema de validação do body da request
  */
 const chatRequestSchema = z.object({
@@ -58,6 +99,7 @@ const chatRequestSchema = z.object({
   conversationHistory: z.array(chatMessageSchema).optional(),
   userProfile: userProfileSchema,
   opportunityContext: opportunityContextSchema,
+  opportunitiesContext: opportunitiesContextSchema,
 })
 
 /**
@@ -80,6 +122,7 @@ export async function chatRoutes(fastify: FastifyInstance) {
         conversationHistory: body.conversationHistory,
         userProfile: body.userProfile,
         opportunityContext: body.opportunityContext,
+        opportunitiesContext: body.opportunitiesContext,
       })
 
       return reply.code(200).send(response)

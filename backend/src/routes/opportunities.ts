@@ -1,7 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import {
-  opportunitiesData,
   getOpportunityById,
   filterOpportunities,
 } from '../data/opportunities.js'
