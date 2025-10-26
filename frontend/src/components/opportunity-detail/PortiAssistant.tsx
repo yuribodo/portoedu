@@ -176,40 +176,44 @@ export function PortiAssistant({ opportunity }: PortiAssistantProps) {
           <div className="flex flex-col h-full">
             {/* Header */}
             <SheetHeader className="bg-[#F9FAFB] border-b border-gray-200 px-4 py-3.5">
-              <div className="flex items-center gap-3">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1, rotate: [0, 10, -10, 0] }}
-                  transition={{ rotate: { duration: 0.5 } }}
-                >
-                  <Avatar size="md" />
-                </motion.div>
-                <div className="flex-1 text-left">
-                  <SheetTitle className="text-base font-semibold text-gray-900">
-                    Assistente Porti
-                  </SheetTitle>
-                  <SheetDescription className="text-sm text-gray-600 mt-0.5">
-                    Tire suas dúvidas sobre esta oportunidade
-                  </SheetDescription>
+              <div className="max-w-3xl mx-auto w-full">
+                <div className="flex items-center gap-3">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1, rotate: [0, 10, -10, 0] }}
+                    transition={{ rotate: { duration: 0.5 } }}
+                  >
+                    <Avatar size="md" />
+                  </motion.div>
+                  <div className="flex-1 text-left">
+                    <SheetTitle className="text-base font-semibold text-gray-900">
+                      Assistente Porti
+                    </SheetTitle>
+                    <SheetDescription className="text-sm text-gray-600 mt-0.5">
+                      Tire suas dúvidas sobre esta oportunidade
+                    </SheetDescription>
+                  </div>
                 </div>
               </div>
             </SheetHeader>
 
             {/* Messages Area */}
             <div className="flex-1 overflow-y-auto px-4 py-6 bg-[#F9FAFB]">
-              {/* Welcome message */}
-              <Message message={welcomeMessage} />
+              <div className="max-w-3xl mx-auto">
+                {/* Welcome message */}
+                <Message message={welcomeMessage} />
 
-              {/* Chat messages */}
-              {messages.map((message) => (
-                <Message key={message.id} message={message} delay={0.05} />
-              ))}
+                {/* Chat messages */}
+                {messages.map((message) => (
+                  <Message key={message.id} message={message} delay={0.05} />
+                ))}
 
-              {/* Typing indicator */}
-              {isTyping && <TypingIndicator />}
+                {/* Typing indicator */}
+                {isTyping && <TypingIndicator />}
 
-              {/* Scroll anchor */}
-              <div ref={messagesEndRef} />
+                {/* Scroll anchor */}
+                <div ref={messagesEndRef} />
+              </div>
             </div>
 
             {/* Input - Override fixed positioning from UserInput */}
