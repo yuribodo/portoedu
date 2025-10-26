@@ -14,6 +14,8 @@ import TypingIndicator from '@/components/chat/TypingIndicator'
 import UserInput from '@/components/chat/UserInput'
 import type { OpportunityDetail } from '@/types/opportunity'
 import type { Message as ChatMessage } from '@/types/chat'
+import { sendChatMessage, type ChatMessage as APIChatMessage, type OpportunityContext } from '@/services/api'
+import { loadUserProfile } from '@/utils/profileStorage'
 
 interface PortiAssistantProps {
   opportunity: OpportunityDetail
@@ -44,8 +46,8 @@ export function PortiAssistant({ opportunity }: PortiAssistantProps) {
     timestamp: new Date()
   }
 
-  // Função de envio de mensagem (mock - pode integrar com IA real depois)
-  const handleSendMessage = (content: string) => {
+  // Função de envio de mensagem (integrada com backend)
+  const handleSendMessage = async (content: string) => {
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       role: 'user',
@@ -54,21 +56,82 @@ export function PortiAssistant({ opportunity }: PortiAssistantProps) {
       timestamp: new Date()
     }
 
-    setMessages([...messages, userMessage])
+    setMessages(prev => [...prev, userMessage])
     setIsTyping(true)
 
-    // Simula resposta do Porti (delay de 1s)
-    setTimeout(() => {
+    try {
+      // Carrega perfil do usuário
+      const userProfile = loadUserProfile()
+
+      // Formata contexto da oportunidade para o backend
+      const opportunityContext: OpportunityContext = {
+        id: opportunity.id,
+        title: opportunity.title,
+        category: opportunity.category,
+        shortDescription: opportunity.shortDescription,
+        fullDescription: opportunity.fullDescription,
+        requirements: opportunity.requirements.map(req => ({
+          type: req.type,
+          description: req.description,
+          required: req.required,
+        })),
+        benefits: opportunity.benefits.map(b => ({
+          icon: b.icon,
+          title: b.title,
+          description: b.description,
+        })),
+        steps: opportunity.steps.map(s => ({
+          order: s.order,
+          title: s.title,
+          description: s.description,
+        })),
+        deadline: opportunity.deadline ? opportunity.deadline.toISOString() : undefined,
+        hasDeadline: opportunity.hasDeadline,
+        mainBenefit: opportunity.mainBenefit,
+        officialLink: opportunity.officialLink,
+        targetAudience: opportunity.targetAudience,
+      }
+
+      // Converte histórico de mensagens para formato da API
+      const conversationHistory: APIChatMessage[] = messages.map(msg => ({
+        role: msg.role === 'bot' ? 'assistant' : 'user',
+        content: msg.content,
+      }))
+
+      // Chama o backend
+      const response = await sendChatMessage({
+        message: content,
+        conversationHistory,
+        userProfile,
+        opportunityContext,
+      })
+
+      // Adiciona resposta do bot
       const botResponse: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'bot',
-        content: getMockResponse(content, opportunity),
+        content: response.message,
         type: 'text',
         timestamp: new Date()
       }
+
       setMessages(prev => [...prev, botResponse])
+    } catch (error) {
+      console.error('Erro ao enviar mensagem:', error)
+
+      // Mensagem de erro amigável
+      const errorMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'bot',
+        content: 'Ops! Tive um probleminha ao processar sua mensagem. Pode tentar novamente? 😅',
+        type: 'text',
+        timestamp: new Date()
+      }
+
+      setMessages(prev => [...prev, errorMessage])
+    } finally {
       setIsTyping(false)
-    }, 1000)
+    }
   }
 
   return (
@@ -160,38 +223,4 @@ export function PortiAssistant({ opportunity }: PortiAssistantProps) {
       </Sheet>
     </>
   )
-}
-
-// Função mock para gerar respostas (pode ser substituída por IA real)
-function getMockResponse(userInput: string, opportunity: OpportunityDetail): string {
-  const input = userInput.toLowerCase()
-
-  // Respostas contextuais baseadas na pergunta
-  if (input.includes('requisito') || input.includes('preciso') || input.includes('precisa')) {
-    return `Os requisitos principais são: ${opportunity.requirements.slice(0, 2).map(r => r.description).join(', ')}. Você pode conferir todos os requisitos na seção "Por que é pra você?" acima!`
-  }
-
-  if (input.includes('prazo') || input.includes('quando') || input.includes('data')) {
-    return opportunity.hasDeadline
-      ? `As inscrições vão até ${opportunity.deadline.toLocaleDateString('pt-BR')}. Não deixe pra última hora! ⏰`
-      : 'Essa oportunidade tem inscrições abertas o ano todo! Você pode se candidatar quando quiser. 😊'
-  }
-
-  if (input.includes('como') || input.includes('inscrever') || input.includes('participar')) {
-    return `Siga os ${opportunity.steps.length} passos na seção "Como participar". O primeiro passo é: ${opportunity.steps[0].title}. Vou te guiar por cada um! 🎯`
-  }
-
-  if (input.includes('valor') || input.includes('bolsa') || input.includes('quanto')) {
-    return `${opportunity.mainBenefit}. Confira todos os benefícios na seção "O que oferece"! 💰`
-  }
-
-  if (input.includes('idade')) {
-    const ageReq = opportunity.requirements.find(r => r.type === 'idade')
-    return ageReq
-      ? `Sobre idade: ${ageReq.description}. Você atende esse requisito? 🎂`
-      : 'Essa oportunidade não tem restrição de idade específica!'
-  }
-
-  // Resposta padrão
-  return 'Boa pergunta! Dê uma olhada nas seções acima para mais detalhes, ou me pergunte algo mais específico sobre requisitos, prazos, ou como se inscrever. Estou aqui pra ajudar! 🐢💚'
 }
