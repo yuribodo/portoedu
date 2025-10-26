@@ -1,8 +1,4 @@
 import { Link } from 'react-router-dom'
-import portiAvatar from '/assets/avatar.png'
-import bookIcon from '/assets/book.png'
-import contentIcon from '/assets/content.png'
-import lampIcon from '/assets/lamp.png'
 import { BackgroundLines } from '@/components/ui/background-lines'
 import { motion } from 'motion/react'
 import { OpportunitiesSection } from '@/components/OpportunitiesSection'
@@ -47,28 +43,28 @@ function Inicial() {
           <motion.div className="mb-0 relative inline-block" variants={itemVariants}>
             {/* Floating Book - Top Left */}
             <img
-              src={bookIcon}
+              src="/assets/book.png"
               alt="Book icon"
               className="absolute top-8 left-0 w-12 h-12 md:w-16 md:h-16 object-contain animate-float-1 opacity-90 pointer-events-none"
             />
 
             {/* Floating Magnifying Glass - Top Right */}
             <img
-              src={contentIcon}
+              src="/assets/content.png"
               alt="Search icon"
               className="absolute top-4 right-4 w-10 h-10 md:w-14 md:h-14 object-contain animate-float-2 opacity-90 pointer-events-none"
             />
 
             {/* Main Avatar */}
             <img
-              src={portiAvatar}
+              src="/assets/avatar.png"
               alt="Porti, a capivara estudiosa com óculos e mochila"
               className="w-64 h-64 md:w-72 md:h-72 object-contain relative z-10"
             />
 
             {/* Floating Light Bulb - Bottom Left */}
             <img
-              src={lampIcon}
+              src="/assets/lamp.png"
               alt="Lamp icon"
               className="absolute bottom-8 left-2 w-14 h-14 md:w-20 md:h-20 object-contain animate-float-3 opacity-90 pointer-events-none"
             />

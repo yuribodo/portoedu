@@ -1,15 +1,12 @@
 import { motion, useScroll, useTransform } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
-import portiAvatar from '/assets/avatar.png'
-import portiAvatarBook from '/assets/avatar-book.png'
-import portiAvatarPencil from '/assets/avatar-pencil.png'
 import { User, MagnifyingGlass, GraduationCap } from '@phosphor-icons/react'
 
 const steps = [
   {
     number: '01',
     icon: User,
-    avatar: portiAvatar,
+    avatar: '/assets/avatar.png',
     title: 'Conte sua história',
     description:
       'Responda perguntas sobre você, seus objetivos e necessidades para personalizarmos sua experiência',
@@ -17,7 +14,7 @@ const steps = [
   {
     number: '02',
     icon: MagnifyingGlass,
-    avatar: portiAvatarBook,
+    avatar: '/assets/avatar-book.png',
     title: 'Descubra oportunidades',
     description:
       'Nosso sistema encontra bolsas e programas perfeitos para você, baseado no seu perfil único',
@@ -25,7 +22,7 @@ const steps = [
   {
     number: '03',
     icon: GraduationCap,
-    avatar: portiAvatarPencil,
+    avatar: '/assets/avatar-pencil.png',
     title: 'Transforme seu futuro',
     description:
       'Acesse informações completas e candidature-se às oportunidades que vão impulsionar sua carreira',
