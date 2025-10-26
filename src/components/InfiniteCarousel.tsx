@@ -1,10 +1,10 @@
 import { motion, useMotionValue, useAnimationFrame } from 'motion/react'
 import { useRef } from 'react'
-import type { Opportunity } from '@/data/opportunities'
-import { OpportunityCard } from './OpportunityCard'
+import type { OpportunityDetail } from '@/types/opportunity'
+import { OpportunityFeedCard } from './opportunities/OpportunityFeedCard'
 
 interface InfiniteCarouselProps {
-  opportunities: Opportunity[]
+  opportunities: OpportunityDetail[]
   direction?: 'left' | 'right'
   speed?: number
 }
@@ -20,9 +20,9 @@ export function InfiniteCarousel({
   // Duplicate items for seamless loop
   const duplicatedOpportunities = [...opportunities, ...opportunities]
 
-  // Card width: mobile 240px + 6px gap = 246px, desktop 320px + 16px gap = 336px
-  // Using average for smooth animation: ~290px
-  const cardWidth = typeof window !== 'undefined' && window.innerWidth < 768 ? 246 : 336
+  // Card width: mobile 200px + 12px gap = 212px, desktop 360px + 16px gap = 376px
+  // OpportunityFeedCard adjusted for mobile
+  const cardWidth = typeof window !== 'undefined' && window.innerWidth < 768 ? 212 : 376
   const distance = opportunities.length * cardWidth
 
   // Calculate speed in pixels per second
@@ -56,14 +56,14 @@ export function InfiniteCarousel({
   return (
     <div className="relative overflow-hidden py-4">
       <motion.div
-        className="flex gap-1.5 md:gap-4"
+        className="flex gap-3 md:gap-4"
         style={{ x }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
         {duplicatedOpportunities.map((opportunity, index) => (
-          <div key={`${opportunity.id}-${index}`}>
-            <OpportunityCard opportunity={opportunity} />
+          <div key={`${opportunity.id}-${index}`} className="w-[200px] md:w-[360px] shrink-0">
+            <OpportunityFeedCard opportunity={opportunity} index={index} />
           </div>
         ))}
       </motion.div>

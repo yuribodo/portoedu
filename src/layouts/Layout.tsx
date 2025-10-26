@@ -5,6 +5,7 @@ function Layout() {
   const location = useLocation()
   const isFormPage = location.pathname === '/form'
   const isHomePage = location.pathname === '/home'
+  const isOpportunitiesPage = location.pathname.startsWith('/oportunidades')
 
   return (
     <div className={`min-h-screen ${isFormPage ? 'bg-[#F9FAFB]' : 'bg-background'}`}>
@@ -32,7 +33,7 @@ function Layout() {
       <main className={isFormPage ? 'pt-16 sm:pt-24' : 'pt-20 sm:pt-28'}>
         <Outlet />
       </main>
-      {!isFormPage && !isHomePage && <Footer />}
+      {!isFormPage && !isHomePage && !isOpportunitiesPage && <Footer />}
     </div>
   )
 }

@@ -1,11 +1,17 @@
 import { motion } from 'motion/react'
 import { InfiniteCarousel } from './InfiniteCarousel'
-import { opportunities } from '@/data/opportunities'
+import { opportunitiesData, getFeaturedOpportunities } from '@/data/opportunitiesDetailed'
 
 export function OpportunitiesSection() {
+  // Get featured opportunities, fallback to all if not enough featured ones
+  const featuredOpportunities = getFeaturedOpportunities()
+  const displayOpportunities = featuredOpportunities.length >= 6
+    ? featuredOpportunities
+    : opportunitiesData.slice(0, 12)
+
   // Split opportunities into two groups for the two carousels
-  const firstHalf = opportunities.slice(0, 6)
-  const secondHalf = opportunities.slice(6, 12)
+  const firstHalf = displayOpportunities.slice(0, 6)
+  const secondHalf = displayOpportunities.slice(6, 12)
 
   return (
     <section id="opportunities" className="py-12 md:py-16 bg-background overflow-hidden">

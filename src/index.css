@@ -1,10 +1,54 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #F4FAFF;
-  --color-primary: #2DB85E;
-  --color-primary-dark: #22A04F;
-  --color-text: #120309;
+  /* Cores principais */
+  --color-background: #F9FAFB;
+  --color-primary: #22C55E;
+  --color-primary-dark: #16A34A;
+  --color-text: #111827;
+
+  /* Sombras */
+  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+
+  /* Border radius */
+  --radius-card: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* Animações de floating */
+  --animate-float-1: float1 4s ease-in-out infinite;
+  --animate-float-2: float2 5s ease-in-out infinite;
+  --animate-float-3: float3 4.5s ease-in-out infinite;
+}
+
+/* Keyframes para animações de floating */
+@keyframes float1 {
+  0%, 100% {
+    transform: translateY(0) scale(1) rotate(-5deg);
+  }
+  50% {
+    transform: translateY(-15px) scale(1.1) rotate(5deg);
+  }
+}
+
+@keyframes float2 {
+  0%, 100% {
+    transform: translateY(0) scale(1) rotate(5deg);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.15) rotate(-5deg);
+  }
+}
+
+@keyframes float3 {
+  0%, 100% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-18px) scale(1.12) rotate(-8deg);
+  }
 }
 
 body {
