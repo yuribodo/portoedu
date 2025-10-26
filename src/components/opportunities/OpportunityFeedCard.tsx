@@ -79,7 +79,7 @@ function OpportunityFeedCardComponent({ opportunity, compatibility, index = 0 }:
         className="block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-xl"
         aria-label={ariaLabel}
       >
-        <Card className="h-full shadow-md hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-primary bg-white overflow-hidden group flex flex-col p-0">
+        <Card className="h-full shadow-md transition-all duration-300 border border-gray-200 hover:border-primary bg-white overflow-hidden group flex flex-col p-0">
           {/* Banner */}
           {opportunity.banner ? (
             <div className="w-full h-28 md:h-48 relative overflow-hidden bg-gray-100">

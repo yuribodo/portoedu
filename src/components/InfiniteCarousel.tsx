@@ -14,16 +14,21 @@ export function InfiniteCarousel({
   direction = 'left',
   speed = 12,
 }: InfiniteCarouselProps) {
-  const x = useMotionValue(0)
-  const isPausedRef = useRef(false)
-
-  // Duplicate items for seamless loop
-  const duplicatedOpportunities = [...opportunities, ...opportunities]
-
-  // Card width: mobile 200px + 12px gap = 212px, desktop 360px + 16px gap = 376px
-  // OpportunityFeedCard adjusted for mobile
   const cardWidth = typeof window !== 'undefined' && window.innerWidth < 768 ? 212 : 376
   const distance = opportunities.length * cardWidth
+
+  // For right direction, start at -distance to ensure smooth infinite loop
+  const x = useMotionValue(direction === 'right' ? -distance : 0)
+  const isPausedRef = useRef(false)
+
+  // Duplicate items multiple times for seamless infinite loop
+  // Using 4 repetitions to ensure smooth infinite scroll on all screen sizes
+  const duplicatedOpportunities = [
+    ...opportunities,
+    ...opportunities,
+    ...opportunities,
+    ...opportunities
+  ]
 
   // Calculate speed in pixels per second
   const pixelsPerSecond = distance / speed
