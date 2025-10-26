@@ -5,18 +5,9 @@ import type {
   Message,
   QuickReplyOption,
 } from '@/types/chat'
+import { saveUserProfile } from '@/utils/profileStorage'
 
 const TYPING_DELAY = 800 // 800ms - timing natural
-
-// Oportunidades mockadas para recomendação
-const oportunidadesMockadas = [
-  { id: 'prouni', nome: 'PROUNI - Programa Universidade para Todos', tipo: 'Bolsa', emoji: '📚' },
-  { id: 'fies', nome: 'FIES - Financiamento Estudantil', tipo: 'Bolsa', emoji: '📚' },
-  { id: 'ganhe-mundo', nome: 'Ganhe o Mundo - Intercâmbio SP', tipo: 'Intercâmbio', emoji: '✈️' },
-  { id: 'fapesp-ic', nome: 'FAPESP - Iniciação Científica', tipo: 'Iniciação Científica', emoji: '🔬' },
-  { id: 'pibic', nome: 'PIBIC - Programa de Iniciação Científica', tipo: 'Iniciação Científica', emoji: '🔬' },
-  { id: 'ciencia-sem-fronteiras', nome: 'Ciência sem Fronteiras', tipo: 'Intercâmbio', emoji: '✈️' },
-]
 
 const idadeOptions: QuickReplyOption[] = [
   { id: 'idade-14', label: '14 anos', value: 14 },
@@ -182,29 +173,17 @@ export function useChatFlow() {
         addUserMessage('Sim, está certo!')
 
         // Salva no localStorage
-        localStorage.setItem('portoEdu_userProfile', JSON.stringify(state.userProfile))
+        saveUserProfile(state.userProfile)
 
         // Mensagem de transição
-        addBotMessage('Bacana! 🎯 Com base no seu perfil, separei algumas oportunidades perfeitas pra você:')
+        addBotMessage('Perfeito! 🎯 Encontrei várias oportunidades que combinam com você!')
 
-        // Mensagem com lista de oportunidades
+        // Mensagem final
         setTimeout(() => {
-          const oportunidadesHtml = oportunidadesMockadas
-            .map(
-              (op) =>
-                `${op.emoji} <strong>${op.tipo}:</strong> <a href="/oportunidade/${op.id}" class="link-oportunidade">${op.nome}</a>`
-            )
-            .join('<br/><br/>')
-
-          addBotMessage(oportunidadesHtml)
-
-          // Mensagem final com call-to-action
-          setTimeout(() => {
-            addBotMessage(
-              'Essas são algumas das oportunidades que combinam com você! Quer ver mais detalhes de alguma ou explorar todas as opções?'
-            )
-          }, TYPING_DELAY + 500)
-        }, TYPING_DELAY + 300)
+          addBotMessage(
+            'Clique no botão abaixo para explorar as oportunidades. Prepare-se para descobrir caminhos incríveis! 🚀'
+          )
+        }, TYPING_DELAY + 500)
 
         setState((prev) => ({ ...prev, isCompleted: true }))
         nextStep('confirmacao')

@@ -119,7 +119,7 @@ export default function ChatContainer() {
               transition={{ delay: 0.3 }}
             >
               <a
-                href="/home"
+                href="/oportunidades"
                 className="
                   px-6 py-3 bg-[#22C55E] text-white rounded-full font-medium
                   hover:bg-[#16A34A] transition-colors shadow-md
