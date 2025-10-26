@@ -21,7 +21,7 @@ Facilitar o acesso a informações sobre benefícios educacionais e sociais (com
 - Gamificação com conquistas, progressos e incentivo à aprendizagem contínua
 
 ### 🧠 Conceito visual
-- **Mascote**: Porti, a tartaruga estudiosa 🐢
+- **Mascote**: Porti, a capivara estudiosa
 - **Cores**: tons de verde e laranja, transmitindo calma e energia positiva
 - **Estilo**: flat minimalista, limpo e simpático
 - **Tom de voz**: gentil, paciente e encorajador
