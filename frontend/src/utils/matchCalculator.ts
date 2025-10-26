@@ -75,10 +75,10 @@ function checkRequirement(
       return checkInteresseRequirement(profile.interesses, requirement.value)
 
     case 'renda':
-      return checkRendaRequirement(profile.renda, requirement.value)
-
     case 'escolaridade':
-      return checkEscolaridadeRequirement(profile.escolaridade, requirement.value)
+      // Não temos essas informações no perfil básico
+      // Retorna true para não penalizar o match
+      return true
 
     case 'outro':
       // Requisitos "outro" não podem ser verificados automaticamente
@@ -145,62 +145,6 @@ function checkInteresseRequirement(
   return hasCommonInterest
 }
 
-/**
- * Verifica requisito de renda
- */
-function checkRendaRequirement(
-  userRenda: 'baixa' | 'media' | 'alta' | undefined,
-  requirementValue: string | undefined
-): boolean {
-  if (!userRenda || !requirementValue) return false
-
-  // Se o requisito menciona renda baixa, aceita apenas baixa
-  if (requirementValue.toLowerCase().includes('baixa')) {
-    return userRenda === 'baixa'
-  }
-
-  // Se menciona renda média, aceita baixa ou média
-  if (requirementValue.toLowerCase().includes('média') || requirementValue.toLowerCase().includes('media')) {
-    return userRenda === 'baixa' || userRenda === 'media'
-  }
-
-  // Por padrão, aceita qualquer renda
-  return true
-}
-
-/**
- * Verifica requisito de escolaridade
- */
-function checkEscolaridadeRequirement(
-  userEscolaridade: string | undefined,
-  requirementValue: string | undefined
-): boolean {
-  if (!userEscolaridade) return false
-  if (!requirementValue) return true
-
-  // Verificação simples por palavras-chave
-  const userEsc = userEscolaridade.toLowerCase()
-  const reqValue = requirementValue.toLowerCase()
-
-  // Se exige fundamental e usuário tem médio/superior, atende
-  if (reqValue.includes('fundamental') &&
-      (userEsc.includes('médio') || userEsc.includes('medio') || userEsc.includes('superior'))) {
-    return true
-  }
-
-  // Se exige médio e usuário tem superior, atende
-  if (reqValue.includes('médio') || reqValue.includes('medio')) {
-    return userEsc.includes('médio') || userEsc.includes('medio') || userEsc.includes('superior')
-  }
-
-  // Se exige graduação, verifica se tem
-  if (reqValue.includes('graduação') || reqValue.includes('graduacao')) {
-    return userEsc.includes('graduação') || userEsc.includes('graduacao') || userEsc.includes('superior')
-  }
-
-  // Por padrão, considera que atende
-  return true
-}
 
 /**
  * Ordena oportunidades por compatibilidade (maior para menor)

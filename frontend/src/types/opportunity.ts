@@ -129,8 +129,6 @@ export interface UserProfile {
   idade?: number
   escolaPublica?: boolean
   interesses?: string[]
-  renda?: 'baixa' | 'media' | 'alta'
-  escolaridade?: string
 }
 
 /**
