@@ -1,77 +1,51 @@
 # PortoEdu
 
-Projeto React com TypeScript, Vite, Tailwind CSS e React Router.
+Plataforma educacional que ajuda pessoas a descobrir e entender seus benefícios sociais e oportunidades de estudo.
 
-## Tecnologias
+## 🐢 Sobre o Projeto
 
-- **React 18** - Biblioteca UI
-- **TypeScript** - Tipagem estática
-- **Vite** - Build tool e dev server
-- **Tailwind CSS** - Framework CSS utility-first
-- **React Router** - Roteamento
+O PortoEdu nasceu de um hackathon e tem como mascote o **Porti**, uma capivara estudiosa que simboliza sabedoria, calma e persistência. A plataforma transforma a descoberta de oportunidades educacionais em uma experiência simples, guiada e gamificada.
 
-## Estrutura do Projeto
+### 🎯 Objetivo
+Facilitar o acesso a informações sobre benefícios educacionais e sociais (como bolsas, programas públicos, e auxílios estudantis).
+
+## 📁 Estrutura do Projeto
+
+Este é um monorepo contendo:
 
 ```
 portoedu/
-├── src/
-│   ├── components/     # Componentes reutilizáveis
-│   ├── pages/          # Páginas da aplicação
-│   │   ├── Home.tsx
-│   │   └── About.tsx
-│   ├── layouts/        # Layouts da aplicação
-│   │   └── Layout.tsx
-│   ├── App.tsx         # Componente principal com rotas
-│   ├── main.tsx        # Entry point
-│   └── index.css       # Estilos globais
-├── public/             # Arquivos estáticos
-└── dist/               # Build de produção
+├── frontend/          # Aplicação React + Vite + TypeScript
+│   ├── src/
+│   ├── package.json
+│   └── README.md
+├── backend/           # API e serviços backend
+└── BACKEND.md        # Documentação da arquitetura backend
 ```
 
-## Comandos
+## 🚀 Como Começar
 
-### Desenvolvimento
-
+### Frontend
 ```bash
-npm run dev
-```
-
-Inicia o servidor de desenvolvimento em http://localhost:5173
-
-### Build
-
-```bash
-npm run build
-```
-
-Cria build de produção na pasta `dist/`
-
-### Preview
-
-```bash
-npm run preview
-```
-
-Visualiza o build de produção localmente
-
-### Lint
-
-```bash
-npm run lint
-```
-
-Executa o ESLint no projeto
-
-## Começando
-
-1. Instale as dependências:
-```bash
+cd frontend
 npm install
-```
-
-2. Inicie o servidor de desenvolvimento:
-```bash
 npm run dev
 ```
 
-3. Abra http://localhost:5173 no navegador
+### Backend
+```bash
+cd backend
+# Instruções serão adicionadas quando o backend for implementado
+```
+
+## 📚 Documentação
+
+- [Frontend README](./frontend/README.md) - Guia completo do frontend
+- [Backend Documentation](./BACKEND.md) - Arquitetura e planejamento do backend
+
+## 🎨 Conceito Visual
+
+- **Mascote**: Porti, a capivara estudiosa
+- **Cores**: tons de verde e laranja, transmitindo calma e energia positiva
+- **Estilo**: flat minimalista, limpo e simpático
+- **Tom de voz**: gentil, paciente e encorajador
